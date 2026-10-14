@@ -1,5 +1,65 @@
 # Desafio técnico: Encontre um Professor
 
+## Solução implementada
+
+API em .NET 8, interface React com TypeScript e testes xUnit. A regra de negócio está em `backend/Professores.Api/BuscaService.cs`, separada da camada HTTP. O arquivo original de professores é copiado para a saída da API e carregado em memória na inicialização.
+
+### Como executar
+
+Requisitos: SDK .NET 8 (qualquer faixa estável a partir de 8.0.100) e Node.js 22.12 ou superior com npm. O `global.json` seleciona a faixa estável mais recente do SDK 8 instalada, sem exigir a versão usada no desenvolvimento.
+
+Na raiz do repositório, inicie a API:
+
+```powershell
+dotnet run --project backend/Professores.Api --urls http://localhost:5000
+```
+
+Em outro terminal, inicie a tela:
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+Acesse `http://localhost:5173`. O Vite encaminha `/api` para a API na porta 5000. Para compilar a tela para produção: `npm run build` dentro de `frontend`. O diretório `dist` precisa ser servido por um servidor que também encaminhe `/api` para o backend.
+
+Execute os testes na raiz:
+
+```powershell
+dotnet test backend/Professores.Tests/Professores.Tests.csproj
+```
+
+### Decisões
+
+- O frontend separa o formulário (`BuscaForm`), os resultados (`BuscaResultados`), os elementos visuais da marca (`Brand` e `Visual`) e o estado HTTP (`useBusca`). O arquivo `App.tsx` compõe a página. O CSS está formatado, com regras de seletores repetidos consolidadas.
+
+- Identidade visual baseada em `https://site.kingoflanguages.com.br/`: vermelho `#CC213A`, azul-marinho `#061F35`, azul `#0057A5`, dourado `#EDC006` e fonte Poppins. Imagens, fontes e favicon oficiais ficam em `frontend/public/brand`; a logo foi obtida no site principal `https://kingoflanguages.com.br/`. Ícones são Lucide. A interface usa Motion para entradas ao aparecer na tela, além dos movimentos `floatBlob` e `typingDot` observados no site. A preferência de movimento reduzido é respeitada. O conteúdo e as interações foram adaptados para a busca do desafio.
+
+- O idioma é comparado sem diferença entre maiúsculas e minúsculas e sem espaços externos. Um idioma não cadastrado retorna uma busca sem professores elegíveis.
+- Dias seguem exatamente os identificadores do enunciado; dias repetidos são considerados apenas uma vez.
+- O primeiro candidato é arredondado para a próxima hora cheia ou meia hora. A aula precisa terminar dentro da faixa e de um único bloco de disponibilidade.
+- Intervalos que apenas se encostam são permitidos. Todos os dias solicitados precisam aceitar o mesmo horário.
+- A carga semanal conta todas as aulas cadastradas. Empates usam ordenação de nomes da cultura `pt-BR`.
+- Não elegíveis incluem todos os professores excluídos, na ordem original do arquivo, com a prioridade de motivos exigida.
+- Entradas semanticamente inválidas retornam HTTP 400 com `mensagem` e uma lista `erros`. JSON malformado é rejeitado pelo ASP.NET Core com HTTP 400.
+- A tela apresenta carregamento, erro de comunicação, erros de validação, ausência de resultados e motivos dos professores indisponíveis. Uma nova busca limpa os resultados anteriores.
+
+### Limites da entrega
+
+Não há persistência de alterações, autenticação ou agendamento de aulas, pois a aplicação realiza somente a busca solicitada. Há testes unitários da regra de negócio e testes de interface com respostas HTTP simuladas; ainda não há testes automatizados em navegador real. O envio do link ao responsável pelo processo seletivo deve ser feito pela pessoa candidata.
+
+### Verificações
+
+- Backend: 24 casos xUnit, sem subir a API, incluindo durações de 30/60/90 minutos, conflitos em um dos dias, horários encostados, limites de disponibilidade e ausência de horário comum.
+- Frontend: seis testes de interface com Vitest e Testing Library, cobrindo envio do formulário, resultados, carregamento, estado vazio, validação, falha de rede com nova tentativa e erro do servidor.
+- Na pasta `frontend`, execute `npm test`, `npm run build` e `npm run format:check`.
+- Os testes de interface usam jsdom e simulam a API e as animações. Eles não substituem a inspeção visual e a integração em um navegador real.
+
+Repositório da solução: https://github.com/Eduzoca/desafio-tecnico-dev-junior, criado a partir do template original. O remoto `origin` aponta para a solução e `upstream` para o enunciado original.
+
+---
+
 ## Contexto
 
 Uma escola de idiomas precisa encontrar professores disponíveis para cada novo aluno. O aluno informa o idioma, os dias da semana, a faixa de horário em que pode ter aula e a duração da aula; o sistema devolve os professores que conseguem atendê-lo e em quais horários.
