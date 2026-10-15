@@ -1,3 +1,4 @@
+import { horarioFinal } from "../config";
 import { Check, CalendarDays } from "lucide-react";
 import { Reveal } from "./Visual";
 import { useState } from "react";
@@ -14,11 +15,8 @@ export function PreviaSemanal({
   consulta: BuscaRequest;
 }) {
   const [selecionado, setSelecionado] = useState<string | null>(null);
-  const termino = (inicio: string) => {
-    const [hora, minuto] = inicio.split(":").map(Number);
-    const total = hora * 60 + minuto + consulta.duracaoMinutos;
-    return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-  };
+  const termino = (inicio: string) =>
+    horarioFinal(inicio, consulta.duracaoMinutos);
   return (
     <>
       <div className="horarios" role="group" aria-label={`Horários de ${nome}`}>

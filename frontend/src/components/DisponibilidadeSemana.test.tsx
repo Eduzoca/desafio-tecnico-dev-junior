@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DisponibilidadeSemana } from "./DisponibilidadeSemana";
 const consulta = {
@@ -52,12 +52,20 @@ it("consulta os sete dias e mostra horários diferentes sem confundi-los com hor
   );
   await screen.findByText("2 dia(s) com horários livres");
   expect(mock).toHaveBeenCalledTimes(7);
-  const article = screen
-    .getByRole("heading", { name: "Ana" })
-    .closest("article")!;
-  expect(within(article).getAllByText("Indisponível")).toHaveLength(5);
-  expect(within(article).getByText("18:00")).toBeTruthy();
-  expect(within(article).getByText("19:00")).toBeTruthy();
+  expect(await screen.findByText("18:00–19:00")).toBeTruthy();
+  expect(await screen.findByText("19:00–20:00")).toBeTruthy();
+  expect(screen.getByRole("combobox", { name: "Professor" })).toBeTruthy();
+  await userEvent.click(
+    screen.getByRole("button", { name: "Recolher agenda" }),
+  );
+  expect(screen.queryByRole("combobox", { name: "Professor" })).toBeNull();
+  const abrir = screen.getByRole("button", {
+    name: "Ver disponibilidade da semana inteira",
+  });
+  expect(abrir.getAttribute("aria-expanded")).toBe("false");
+  await userEvent.click(abrir);
+  expect(screen.getByRole("combobox", { name: "Professor" })).toBeTruthy();
+  expect(mock).toHaveBeenCalledTimes(7);
 });
 it("mostra erro e permite nova tentativa quando um dia falha", async () => {
   vi.stubGlobal(
@@ -76,9 +84,38 @@ it("mostra erro e permite nova tentativa quando um dia falha", async () => {
   expect(
     (
       screen.getByRole("button", {
-        name: "Ver disponibilidade da semana inteira",
+        name: "Tentar novamente",
       }) as HTMLButtonElement
     ).disabled,
   ).toBe(false);
   expect(screen.queryByRole("article")).toBeNull();
+});
+it("troca o professor no mesmo calendário sem misturar as agendas", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            professores: [
+              { id: 1, nome: "Ana", aulasNaSemana: 1, horarios: ["18:00"] },
+            ],
+            naoElegiveis: [
+              { id: 2, nome: "Bruno", motivo: "Agenda bloqueada" },
+            ],
+          }),
+        ),
+    ),
+  );
+  render(<DisponibilidadeSemana consulta={consulta} />);
+  await userEvent.click(
+    screen.getByRole("button", {
+      name: "Ver disponibilidade da semana inteira",
+    }),
+  );
+  const select = await screen.findByRole("combobox", { name: "Professor" });
+  await screen.findAllByText("18:00–19:00");
+  await userEvent.selectOptions(select, "2");
+  expect(screen.getByText("Agenda bloqueada")).toBeTruthy();
+  expect(screen.queryByText("18:00–19:00")).toBeNull();
 });

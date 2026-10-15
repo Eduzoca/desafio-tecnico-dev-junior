@@ -1,3 +1,4 @@
+import { tempoLimiteBusca } from "../config";
 import { useEffect, useRef, useState } from "react";
 import type { BuscaRequest, Resultado } from "../types";
 
@@ -17,7 +18,7 @@ export function useBusca() {
     const timer = setTimeout(() => {
       expirou = true;
       controle.abort();
-    }, 15000);
+    }, tempoLimiteBusca);
     setCarregando(true);
     setErros([]);
     setResultado(null);

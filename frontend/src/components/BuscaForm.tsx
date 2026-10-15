@@ -1,4 +1,5 @@
-import { LanguageFeedback } from "./LanguageFeedback";
+import { LanguageOption } from "./LanguageFeedback";
+import { idiomas, duracoes, buscaInicial } from "../config";
 import { useState } from "react";
 import { Check, Search, LoaderCircle, CalendarDays } from "lucide-react";
 import type { BuscaRequest } from "../types";
@@ -10,11 +11,11 @@ export function BuscaForm({
   carregando: boolean;
   onSearch: (request: BuscaRequest) => Promise<void>;
 }) {
-  const [idioma, setIdioma] = useState("Espanhol");
-  const [dias, setDias] = useState<string[]>(["segunda"]);
-  const [inicioFaixa, setInicio] = useState("18:00");
-  const [fimFaixa, setFim] = useState("20:00");
-  const [duracaoMinutos, setDuracao] = useState(60);
+  const [idioma, setIdioma] = useState<string>(buscaInicial.idioma);
+  const [dias, setDias] = useState<string[]>(buscaInicial.dias);
+  const [inicioFaixa, setInicio] = useState(buscaInicial.inicioFaixa);
+  const [fimFaixa, setFim] = useState(buscaInicial.fimFaixa);
+  const [duracaoMinutos, setDuracao] = useState(buscaInicial.duracaoMinutos);
   const minutos = (hora: string) => {
     const [h, m] = hora.split(":").map(Number);
     return h * 60 + m;
@@ -36,7 +37,7 @@ export function BuscaForm({
       <fieldset disabled={carregando}>
         <fieldset className="idioma-opcoes">
           <legend>Quero aprender</legend>
-          {["Inglês", "Espanhol", "Francês"].map((opcao) => (
+          {idiomas.map(({ nome: opcao }) => (
             <label key={opcao}>
               <input
                 type="radio"
@@ -45,11 +46,10 @@ export function BuscaForm({
                 checked={idioma === opcao}
                 onChange={() => setIdioma(opcao)}
               />
-              <span>{opcao}</span>
+              <LanguageOption idioma={opcao} selecionado={idioma === opcao} />
             </label>
           ))}
         </fieldset>
-        <LanguageFeedback idioma={idioma} />
         <fieldset className="dias">
           <legend>Dias da semana</legend>
           {diasSemana.map(([valor, nome]) => (
@@ -95,7 +95,7 @@ export function BuscaForm({
             value={duracaoMinutos}
             onChange={(e) => setDuracao(Number(e.target.value))}
           >
-            {[30, 60, 90].map((d) => (
+            {duracoes.map((d) => (
               <option key={d} value={d}>
                 {d} minutos
               </option>

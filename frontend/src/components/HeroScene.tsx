@@ -1,3 +1,4 @@
+import { Globe } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export function HeroScene() {
@@ -37,5 +38,9 @@ export function HeroScene() {
       cleanup?.();
     };
   }, []);
-  return <div className="hero-scene" ref={ref} aria-hidden="true" />;
+  return (
+    <div className="hero-scene" ref={ref} aria-hidden="true">
+      <Globe className="globe-fallback" strokeWidth={0.75} />
+    </div>
+  );
 }

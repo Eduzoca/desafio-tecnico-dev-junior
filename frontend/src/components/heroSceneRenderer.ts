@@ -1,3 +1,4 @@
+import { idiomas } from "../config";
 import * as THREE from "three";
 import { gsap } from "gsap";
 
@@ -21,14 +22,14 @@ export function createHeroScene(host: HTMLDivElement): () => void {
   const group = new THREE.Group();
   scene.add(group);
   const globe = new THREE.Group();
-  globe.position.set(3.3, 0.35, -1);
+  globe.position.set(0, 0, 0);
   group.add(globe);
   const geometry = new THREE.TorusGeometry(1.8, 0.009, 6, 96);
   const materials = [
     new THREE.MeshBasicMaterial({
       color: 0x0057a5,
       transparent: true,
-      opacity: 0.14,
+      opacity: 0.6,
     }),
   ];
   for (let i = 0; i < 8; i++) {
@@ -46,13 +47,13 @@ export function createHeroScene(host: HTMLDivElement): () => void {
   globe.rotation.z = -0.18;
   const textures: THREE.CanvasTexture[] = [];
   const labels: THREE.SpriteMaterial[] = [];
-  ["Hello!", "¡Hola!", "Bonjour!"].forEach((text, index) => {
+  idiomas.forEach(({ saudacao: text, cor }, index) => {
     const canvas = document.createElement("canvas");
     canvas.width = 384;
     canvas.height = 160;
     const context = canvas.getContext("2d");
     if (!context) return;
-    context.fillStyle = ["#0057a5", "#cc213a", "#061f35"][index];
+    context.fillStyle = cor;
     context.beginPath();
     context.roundRect(8, 8, 368, 126, 30);
     context.fill();
@@ -72,7 +73,7 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: 0.48,
+      opacity: 0.9,
       depthTest: false,
     });
     labels.push(material);
@@ -91,7 +92,7 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     { y: 0.35, x: 0.12, duration: 14, ease: "sine.inOut" },
     0,
   );
-  timeline.to(globe.position, { y: 0.6, duration: 14, ease: "sine.inOut" }, 0);
+  timeline.to(globe.position, { y: 0.12, duration: 14, ease: "sine.inOut" }, 0);
   const tiltX = gsap.quickTo(group.rotation, "x", {
     duration: 0.9,
     ease: "power2.out",
@@ -100,7 +101,7 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     duration: 0.9,
     ease: "power2.out",
   });
-  const surface = host.closest("main");
+  const surface = host;
   const pointer = (event: PointerEvent) => {
     if (event.pointerType !== "mouse" || !visible || document.hidden || lost)
       return;
@@ -145,6 +146,10 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
     camera.aspect = width / height;
+    camera.position.z =
+      3.1 /
+      (Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
+        Math.min(camera.aspect, 1));
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
     if (!lost) render();

@@ -962,17 +962,6 @@ details li span {
     transition: none !important;
   }
 }
-
-.hero-scene {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.hero-scene canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
 .idioma-opcoes {
   display: flex;
   gap: 6px;
@@ -1122,126 +1111,150 @@ button:not(:disabled):active {
     transform: none;
   }
 }
-.language-feedback {
-  position: relative;
-  margin: -6px 0 18px;
+@media (max-width: 800px) {
 }
-.language-current {
+@media (prefers-reduced-motion: reduce) {
+}
+.hero-scene {
+  position: relative;
+  height: 190px;
+  width: 100%;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.hero-scene canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.globe-fallback {
+  display: block;
+  width: 130px;
+  height: 130px;
+  margin: 30px auto;
+  color: var(--brand-blue);
+  opacity: 0.45;
+}
+.hero-scene:has(canvas) .globe-fallback {
+  visibility: hidden;
+}
+.idioma-opcoes .language-option {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--brand-blue);
-  font-size: 11px;
+  justify-content: center;
+  gap: 6px;
+  overflow: hidden;
+  isolation: isolate;
 }
-.language-current svg {
-  width: 25px;
-  height: 17px;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px #061f3515;
+.language-option svg.language-flag {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 10px;
+  border-radius: 1px;
+  opacity: 0.85;
 }
-.flag-flight {
+.language-shine {
   position: absolute;
-  left: 50%;
-  top: 0;
-  pointer-events: none;
-  z-index: 4;
-}
-.flying-flag {
-  position: absolute;
-  display: block;
-  width: 34px;
+  inset: 0;
+  z-index: -1;
   opacity: 0;
-}
-.flying-flag svg {
-  width: 34px;
-  border-radius: 3px;
-  filter: drop-shadow(0 4px 5px #061f3520);
+  background: linear-gradient(100deg, transparent, #ffffff60, transparent);
+  pointer-events: none;
 }
 .disponibilidade-semana {
-  margin: 0 0 36px;
-  padding: 24px;
+  margin: 0 0 28px;
+  padding: 18px;
   border: 1px solid #0057a526;
-  border-radius: 18px;
-  background: #f4f8fc;
+  border-radius: 14px;
+  background: #f7faff;
 }
-.disponibilidade-semana h3 {
-  margin: 10px 0;
+.agenda-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.agenda-heading h3 {
+  font-size: 17px;
+  margin: 5px 0;
 }
 .disponibilidade-semana > p,
+.agenda-status,
 .disponibilidade-semana [role="status"] {
-  font-size: 12px;
-}
-.semana-professores {
-  display: grid;
-  gap: 14px;
-  margin: 20px 0;
-}
-.semana-professores article {
-  padding: 18px;
-}
-.semana-professores h4 {
-  margin: 0 0 6px;
-}
-.semana-professores article > p {
-  font-size: 12px;
-}
-.semana-dias {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 7px;
-  align-items: start;
-}
-.semana-dias details {
-  margin: 0;
-  border: 1px solid #0057a540;
-  border-radius: 8px;
-  background: #e9f3ff;
-  min-width: 0;
-}
-.semana-dias summary {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 5px;
-  padding: 12px 8px;
   font-size: 11px;
-  color: var(--brand-blue);
+  margin: 8px 0;
 }
-.semana-dias summary span,
-.dia-indisponivel span {
-  display: block;
-  font-size: 10px;
+.agenda-toggle {
+  width: auto;
+  padding: 9px 13px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.agenda-professor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.agenda-professor select {
+  max-width: 340px;
+  margin: 0;
+  padding: 9px 12px;
+  background: white;
+}
+.agenda-calendar {
+  margin-top: 12px;
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  --fc-border-color: #e4eaf1;
+  --fc-event-bg-color: #edf4ff;
+  --fc-event-border-color: #cadcf4;
+  --fc-event-text-color: #061f35;
+  --fc-today-bg-color: transparent;
+}
+.agenda-calendar .fc {
+  min-width: 540px;
+  font-family: inherit;
+  font-size: 11px;
+}
+.agenda-calendar .fc-col-header-cell-cushion {
+  padding: 9px 3px;
+  text-decoration: none;
+}
+.agenda-calendar .fc-daygrid-event {
+  padding: 3px;
+  border-radius: 4px;
+  white-space: normal;
+}
+.agenda-calendar .fc-event-title {
   font-weight: 400;
 }
-.semana-dias details p {
-  padding: 0 8px 8px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 2;
+.agenda-calendar .fc-popover {
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
 }
-.semana-dias details[open] {
-  border-color: var(--brand-blue);
-}
-.dia-indisponivel {
-  padding: 12px 8px;
-  border-radius: 8px;
-  background: #f4f4f4;
-  color: var(--text-muted);
-  font-size: 11px;
-}
-.dia-indisponivel span {
-  margin-top: 5px;
-}
-@media (max-width: 800px) {
-  .semana-dias {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 600px) {
+  .agenda-heading {
+    align-items: start;
+    flex-direction: column;
   }
-  .disponibilidade-semana {
-    padding: 16px;
+  .agenda-professor {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hero-scene {
+    height: 160px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .flag-flight {
+  .language-shine {
     display: none;
   }
 }

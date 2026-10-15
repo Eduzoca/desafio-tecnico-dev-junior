@@ -1,3 +1,4 @@
+import { HeroScene } from "./HeroScene";
 import { Clock, Globe, Mail, User, Check, ArrowUpRight } from "lucide-react";
 import { Reveal, Stars } from "./Visual";
 export function BrandHeader() {
@@ -64,6 +65,7 @@ export function Hero() {
             </li>
           </ul>
         </header>
+        <HeroScene />
       </Reveal>
     </>
   );

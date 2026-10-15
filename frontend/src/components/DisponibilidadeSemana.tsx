@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import type { BuscaRequest, Resultado } from "../types";
-import { diasSemana } from "./ResumoBusca";
+import { diasSemana, tempoLimiteBusca } from "../config";
+const AgendaCalendar = lazy(() => import("./AgendaCalendar"));
 type ProfessorSemana = {
   id: number;
   nome: string;
@@ -15,6 +16,9 @@ export function DisponibilidadeSemana({
   const [professores, setProfessores] = useState<ProfessorSemana[] | null>(
     null,
   );
+  const [aberto, setAberto] = useState(false);
+  const [professorId, setProfessorId] = useState<number | null>(null);
+  const painelId = useId();
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
   const controle = useRef<AbortController | null>(null);
@@ -31,7 +35,7 @@ export function DisponibilidadeSemana({
     controle.current = abort;
     setCarregando(true);
     setErro("");
-    const timer = setTimeout(() => abort.abort(), 15000);
+    const timer = setTimeout(() => abort.abort(), tempoLimiteBusca);
     try {
       const respostas = await Promise.all(
         diasSemana.map(async ([dia]) => {
@@ -76,70 +80,87 @@ export function DisponibilidadeSemana({
       if (controle.current === abort) setCarregando(false);
     }
   }
+  const selecionado =
+    professores?.find((p) => p.id === professorId) ??
+    professores?.find((p) => Object.keys(p.dias).length > 0) ??
+    professores?.[0];
+  function alternar() {
+    setAberto(!aberto);
+    if (!aberto && !professores && !carregando) void consultar();
+  }
   return (
     <section
       className="disponibilidade-semana"
       aria-label="Disponibilidade por professor"
     >
-      <span className="marca">EXPLORE A SEMANA</span>
-      <h3>Em quais dias cada professor está disponível?</h3>
-      <p>
-        {consulta.idioma} · {consulta.inicioFaixa}–{consulta.fimFaixa} · aulas
-        de {consulta.duracaoMinutos} min. Esta consulta verifica cada dia
-        separadamente, incluindo os dias que você não selecionou.
-      </p>
-      {!professores && (
+      <div className="agenda-heading">
+        <div>
+          <span className="marca">EXPLORE A SEMANA</span>
+          <h3>Agenda dos professores</h3>
+        </div>
         <button
           type="button"
-          onClick={() => void consultar()}
-          disabled={carregando}
+          className="agenda-toggle"
+          aria-expanded={aberto}
+          aria-controls={painelId}
+          onClick={alternar}
         >
-          {carregando
-            ? "Consultando os sete dias…"
-            : "Ver disponibilidade da semana inteira"}
+          {aberto ? "Recolher agenda" : "Ver disponibilidade da semana inteira"}
         </button>
-      )}
-      <div role="status">
-        {carregando ? "Verificando as agendas reais dos professores…" : erro}
       </div>
-      {professores && (
-        <div className="semana-professores">
-          {professores.map((p) => (
-            <article key={p.id}>
-              <h4>{p.nome}</h4>
-              <p>
-                {Object.keys(p.dias).length
-                  ? `${Object.keys(p.dias).length} dia(s) com horários livres`
-                  : p.motivo === "Sem horário em comum nos dias pedidos"
+      <p>
+        {consulta.idioma} · {consulta.inicioFaixa}–{consulta.fimFaixa} ·{" "}
+        {consulta.duracaoMinutos} min por aula
+      </p>
+      {aberto && (
+        <div id={painelId}>
+          <div role="status">
+            {carregando ? "Consultando os sete dias…" : erro}
+          </div>
+          {erro && (
+            <button type="button" onClick={() => void consultar()}>
+              Tentar novamente
+            </button>
+          )}
+          {professores && selecionado && (
+            <>
+              <label className="agenda-professor">
+                Professor
+                <select
+                  value={selecionado.id}
+                  onChange={(e) => setProfessorId(Number(e.target.value))}
+                >
+                  {professores.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nome} · {Object.keys(p.dias).length} dia(s) disponíveis
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="agenda-status">
+                {Object.keys(selecionado.dias).length
+                  ? `${Object.keys(selecionado.dias).length} dia(s) com horários livres`
+                  : selecionado.motivo ===
+                      "Sem horário em comum nos dias pedidos"
                     ? "Sem horários livres nesta faixa e duração."
-                    : p.motivo}
+                    : selecionado.motivo}
               </p>
-              <div className="semana-dias">
-                {diasSemana.map(([dia, nome]) =>
-                  p.dias[dia]?.length ? (
-                    <details key={dia}>
-                      <summary>
-                        {nome}
-                        <span>{p.dias[dia].length} horário(s)</span>
-                      </summary>
-                      <p>{p.dias[dia].join(" · ")}</p>
-                    </details>
-                  ) : (
-                    <div className="dia-indisponivel" key={dia}>
-                      <strong>{nome}</strong>
-                      <span>Indisponível</span>
-                    </div>
-                  ),
-                )}
-              </div>
-            </article>
-          ))}
+              <Suspense fallback={<p role="status">Carregando calendário…</p>}>
+                <AgendaCalendar
+                  dias={selecionado.dias}
+                  duracao={consulta.duracaoMinutos}
+                />
+              </Suspense>
+              <p className="nota">
+                Semana recorrente. Cada bloco é uma opção de aula, não uma
+                reserva. Dias vazios não possuem horários nesta faixa. Use
+                “mais” para ver todas as opções do dia.
+              </p>
+            </>
+          )}
+          {professores?.length === 0 && <p>Nenhum professor cadastrado.</p>}
         </div>
       )}
-      <p className="nota">
-        Disponibilidade recorrente, descontando as aulas existentes. Dias livres
-        podem ter horários diferentes entre si. Nenhuma aula é reservada.
-      </p>
     </section>
   );
 }

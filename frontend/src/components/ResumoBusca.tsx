@@ -1,14 +1,7 @@
 import type { BuscaRequest, Resultado } from "../types";
 
-export const diasSemana = [
-  ["segunda", "Segunda"],
-  ["terca", "Terça"],
-  ["quarta", "Quarta"],
-  ["quinta", "Quinta"],
-  ["sexta", "Sexta"],
-  ["sabado", "Sábado"],
-  ["domingo", "Domingo"],
-];
+import { diasSemana } from "../config";
+export { diasSemana } from "../config";
 
 export function ResumoBusca({
   consulta,
