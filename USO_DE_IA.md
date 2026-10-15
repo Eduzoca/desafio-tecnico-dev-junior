@@ -10,4 +10,10 @@ Na primeira implementação da leitura do arquivo, a IA tentou desserializar `pr
 
 Os testes e a compilação ajudam a verificar a entrega, mas não substituem a leitura e compreensão do código pela pessoa candidata.
 
+## Aprofundamento dentro do enunciado
+
+O Codex preparou índices de agenda por dia, adicionou resumo de resultados e prévia semanal, proteção contra respostas antigas e timeout, testes com todos os dados reais e validação contínua no GitHub. Os nove cenários parametrizados do arquivo real executam 1.143 buscas e comparam a solução com um calendário independente de minutos livres. Não foram alterados os professores nem o contrato de resposta pedido.
+
+Um segundo erro ocorreu ao padronizar JSON inválido: somente `UseStatusCodePages` não tratava o caso no ambiente de desenvolvimento, onde a Minimal API lançava `BadHttpRequestException`. Três testes HTTP falharam ao tentar ler a resposta como JSON. Foi configurado `ThrowOnBadRequest = false` para que o tratamento de HTTP 400 também funcionasse nesse ambiente; os testes passaram após a correção.
+
 Na revisão final, o Codex flexibilizou a seleção do SDK .NET 8, ampliou os testes de fronteira, separou o frontend em componentes e um hook, consolidou o CSS e adicionou testes de interface com respostas HTTP simuladas. O acesso ao navegador foi bloqueado pela ferramenta durante essa revisão; a nova verificação ficou limitada aos testes, à compilação e à inspeção do código. O agente também criou o repositório da solução a partir do template e preparou a publicação Git autorizada pela pessoa usuária.

@@ -6,7 +6,7 @@ API em .NET 8, interface React com TypeScript e testes xUnit. A regra de negóci
 
 ### Como executar
 
-Requisitos: SDK .NET 8 (qualquer faixa estável a partir de 8.0.100) e Node.js 22.12 ou superior com npm. O `global.json` seleciona a faixa estável mais recente do SDK 8 instalada, sem exigir a versão usada no desenvolvimento.
+Requisitos: SDK .NET 8 (qualquer faixa estável a partir de 8.0.100) e Node.js 22.13+ na linha 22, ou 24+, com npm. O `global.json` seleciona a faixa estável mais recente do SDK 8 instalada, sem exigir a versão usada no desenvolvimento.
 
 Na raiz do repositório, inicie a API:
 
@@ -27,7 +27,7 @@ Acesse `http://localhost:5173`. O Vite encaminha `/api` para a API na porta 5000
 Execute os testes na raiz:
 
 ```powershell
-dotnet test backend/Professores.Tests/Professores.Tests.csproj
+dotnet test EncontreUmProfessor.sln --configuration Release
 ```
 
 ### Decisões
@@ -39,11 +39,16 @@ dotnet test backend/Professores.Tests/Professores.Tests.csproj
 - O idioma é comparado sem diferença entre maiúsculas e minúsculas e sem espaços externos. Um idioma não cadastrado retorna uma busca sem professores elegíveis.
 - Dias seguem exatamente os identificadores do enunciado; dias repetidos são considerados apenas uma vez.
 - O primeiro candidato é arredondado para a próxima hora cheia ou meia hora. A aula precisa terminar dentro da faixa e de um único bloco de disponibilidade.
+- A agenda é preparada uma vez na inicialização: horários viram minutos e os intervalos são agrupados por dia. Isso evita converter repetidamente strings durante cada busca. Os dados originais não são modificados. Não foi feito benchmark de desempenho; a otimização reduz trabalho repetido, sem prometer ganho medido.
 - Intervalos que apenas se encostam são permitidos. Todos os dias solicitados precisam aceitar o mesmo horário.
 - A carga semanal conta todas as aulas cadastradas. Empates usam ordenação de nomes da cultura `pt-BR`.
 - Não elegíveis incluem todos os professores excluídos, na ordem original do arquivo, com a prioridade de motivos exigida.
-- Entradas semanticamente inválidas retornam HTTP 400 com `mensagem` e uma lista `erros`. JSON malformado é rejeitado pelo ASP.NET Core com HTTP 400.
+- Entradas semanticamente inválidas retornam HTTP 400 com `mensagem` e uma lista `erros`. JSON malformado, corpo nulo e tipos incorretos também retornam HTTP 400 em JSON, tanto em desenvolvimento quanto em produção.
 - A tela apresenta carregamento, erro de comunicação, erros de validação, ausência de resultados e motivos dos professores indisponíveis. Uma nova busca limpa os resultados anteriores.
+- O resumo usa os critérios enviados, mesmo que o formulário seja editado depois. Contamos todos os professores analisados e as opções de professor/horário; duas pessoas no mesmo horário são duas opções, não duas vagas garantidas.
+- Clicar em um horário mostra uma prévia semanal com início e término em cada dia solicitado. Essa prévia não reserva aulas nem modifica o JSON. A classificação e a ordenação continuam sendo as exigidas no enunciado.
+- Os motivos dos não elegíveis são agrupados para facilitar a leitura, mas cada professor continua listado com o texto exato exigido e a prioridade original.
+- Uma busca que ultrapasse 15 segundos é cancelada com mensagem para nova tentativa. Respostas antigas não substituem resultados recentes. O cancelamento também ocorre quando a tela é desmontada.
 
 ### Limites da entrega
 
@@ -51,10 +56,20 @@ Não há persistência de alterações, autenticação ou agendamento de aulas, 
 
 ### Verificações
 
-- Backend: 24 casos xUnit, sem subir a API, incluindo durações de 30/60/90 minutos, conflitos em um dos dias, horários encostados, limites de disponibilidade e ausência de horário comum.
-- Frontend: seis testes de interface com Vitest e Testing Library, cobrindo envio do formulário, resultados, carregamento, estado vazio, validação, falha de rede com nova tentativa e erro do servidor.
+- Backend: 38 casos xUnit. São 24 testes de validação/fronteira, nove combinações de idioma/duração que executam 1.143 buscas no arquivo real e cinco testes adicionais do contrato HTTP.
+- As 1.143 buscas percorrem os 127 subconjuntos não vazios da semana, três idiomas e três durações. Um calendário independente, minuto a minuto, confere os oito professores, horários, carga semanal, motivos e ordenação. A faixa dessas buscas é `00:00–23:59`; os testes unitários específicos cobrem faixas menores. Isso não é uma prova para todos os dados possíveis.
+- Os testes de regras e dados reais instanciam apenas o serviço, sem subir a API. Os testes HTTP adicionais usam um servidor em memória (`WebApplicationFactory`), sem precisar iniciar um processo ou abrir uma porta.
+- Frontend: nove testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
 - Na pasta `frontend`, execute `npm test`, `npm run build` e `npm run format:check`.
 - Os testes de interface usam jsdom e simulam a API e as animações. Eles não substituem a inspeção visual e a integração em um navegador real.
+- O workflow `.github/workflows/validacao.yml` executa testes backend, testes frontend, formatação e build em cada push e pull request.
+
+### Como revisar a solução
+
+1. Execute o exemplo em `backend/Professores.Api/buscas.http`: Ana deve retornar `18:00`, e Diego, `18:00`, `18:30` e `19:00`.
+2. Busque Inglês em segunda e quarta, com duração de 60 minutos. Confira os motivos de exclusão: Carla está bloqueada, Elisa não tem quarta e Heitor não possui horário comum na faixa `18:00–21:00`.
+3. Observe Fábio: seu bloco começa às `18:15`, então o primeiro candidato permitido é `18:30`.
+4. Clique em um horário para conferir início e término nos dias selecionados; alterar o formulário só afeta resultados após uma nova busca.
 
 Repositório da solução: https://github.com/Eduzoca/desafio-tecnico-dev-junior, criado a partir do template original. O remoto `origin` aponta para a solução e `upstream` para o enunciado original.
 
