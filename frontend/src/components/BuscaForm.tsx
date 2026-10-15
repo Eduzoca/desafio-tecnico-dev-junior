@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { Check, Search } from "lucide-react";
 import type { BuscaRequest } from "../types";
-const semana = [
-  ["segunda", "Segunda"],
-  ["terca", "Terça"],
-  ["quarta", "Quarta"],
-  ["quinta", "Quinta"],
-  ["sexta", "Sexta"],
-  ["sabado", "Sábado"],
-  ["domingo", "Domingo"],
-];
+import { diasSemana } from "./ResumoBusca";
 export function BuscaForm({
   carregando,
   onSearch,
@@ -41,7 +33,7 @@ export function BuscaForm({
         </label>
         <fieldset className="dias">
           <legend>Dias da semana</legend>
-          {semana.map(([valor, nome]) => (
+          {diasSemana.map(([valor, nome]) => (
             <label key={valor}>
               <input
                 type="checkbox"

@@ -858,3 +858,103 @@ details[open] ul {
     padding: 16px 20px;
   }
 }
+.resumo-busca {
+  margin: 22px 0 28px;
+}
+.consulta-descricao {
+  font-weight: 600;
+  color: var(--brand-navy);
+}
+.metricas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.metricas > div {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  background: white;
+}
+.metricas dt {
+  font-size: 12px;
+  color: var(--text-body);
+}
+.metricas dd {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+.ordenacao {
+  font-size: 12px;
+}
+.horarios button {
+  width: auto;
+  padding: 9px 13px;
+  background: #fff0f3;
+  color: #b61b32;
+  border: 1px solid #f6dce2;
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 13px;
+}
+.horarios button[aria-pressed="true"] {
+  background: var(--brand-red);
+  color: white;
+  border-color: var(--brand-red);
+}
+.previa-semanal {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8f9fb;
+}
+.previa-semanal h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.previa-semanal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.previa-semanal li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 13px;
+}
+.previa-semanal p {
+  margin-bottom: 0;
+  font-size: 11px;
+}
+.motivos-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.motivos-resumo p {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f8f9fb;
+  border-radius: 8px;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .metricas {
+    grid-template-columns: 1fr;
+  }
+  .metricas > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .metricas dd {
+    margin: 0;
+    font-size: 22px;
+  }
+}

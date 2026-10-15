@@ -1,12 +1,16 @@
 import { Check, Clock, Plus, User, Users } from "lucide-react";
 import { Reveal } from "./Visual";
-import type { Resultado } from "../types";
+import type { BuscaRequest, Resultado } from "../types";
+import { ResumoBusca } from "./ResumoBusca";
+import { PreviaSemanal } from "./PreviaSemanal";
 export function BuscaResultados({
   resultado,
+  consulta,
   erros,
   carregando,
 }: {
   resultado: Resultado | null;
+  consulta: BuscaRequest | null;
   erros: string[];
   carregando: boolean;
 }) {
@@ -55,6 +59,9 @@ export function BuscaResultados({
               ? `${resultado.professores.length} professor(es) disponíveis`
               : "Nenhum professor encontrado"}
           </h2>
+          {consulta && (
+            <ResumoBusca consulta={consulta} resultado={resultado} />
+          )}
           {!resultado.professores.length && (
             <p>Tente outros dias, uma faixa maior ou uma duração menor.</p>
           )}
@@ -75,11 +82,13 @@ export function BuscaResultados({
                   <p className="rotulo">
                     <Clock size={14} /> Horários de início disponíveis
                   </p>
-                  <div className="horarios">
-                    {p.horarios.map((h) => (
-                      <span key={h}>{h}</span>
-                    ))}
-                  </div>
+                  {consulta && (
+                    <PreviaSemanal
+                      nome={p.nome}
+                      horarios={p.horarios}
+                      consulta={consulta}
+                    />
+                  )}
                 </article>
               </Reveal>
             ))}
@@ -92,6 +101,27 @@ export function BuscaResultados({
                 </span>
                 <Plus size={18} />
               </summary>
+              <div
+                className="motivos-resumo"
+                aria-label="Resumo dos motivos de exclusão"
+              >
+                {[
+                  "Não ensina o idioma",
+                  "Agenda bloqueada",
+                  "Sem horário em comum nos dias pedidos",
+                ].map((motivo) => {
+                  const quantidade = resultado.naoElegiveis.filter(
+                    (p) => p.motivo === motivo,
+                  ).length;
+                  return (
+                    quantidade > 0 && (
+                      <p key={motivo}>
+                        <strong>{quantidade}</strong> · {motivo}
+                      </p>
+                    )
+                  );
+                })}
+              </div>
               <ul>
                 {resultado.naoElegiveis.map((p) => (
                   <li key={p.id}>

@@ -36,6 +36,27 @@ afterEach(() => {
 });
 
 describe("Busca de professores", () => {
+  it("mostra a semana do horário escolhido usando os critérios da busca enviada", async () => {
+    fetchMock.mockResolvedValue(response(sucesso));
+    render(<App />);
+    await userEvent.click(screen.getByRole("checkbox", { name: "Quarta" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Encontrar professores" }),
+    );
+    await screen.findByRole("heading", { name: "Ana" });
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Duração" }),
+      "90",
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ver semana de Ana às 18:00" }),
+    );
+    expect(screen.getAllByText("18:00–19:00")).toHaveLength(2);
+    expect(screen.queryByText("18:00–19:30")).toBeNull();
+    expect(
+      screen.getByText("Prévia de disponibilidade. Nenhuma aula foi agendada."),
+    ).toBeTruthy();
+  });
   it("envia as preferências e mostra horários, carga e não elegíveis", async () => {
     fetchMock.mockResolvedValue(response(sucesso));
     render(<App />);

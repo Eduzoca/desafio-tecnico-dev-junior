@@ -5,7 +5,7 @@ import { BuscaResultados } from "./components/BuscaResultados";
 import { Reveal } from "./components/Visual";
 import { useBusca } from "./hooks/useBusca";
 export default function App() {
-  const { resultado, erros, carregando, buscar } = useBusca();
+  const { resultado, consulta, erros, carregando, buscar } = useBusca();
   return (
     <MotionConfig reducedMotion="user">
       <BrandHeader />
@@ -22,6 +22,7 @@ export default function App() {
         </div>
         <BuscaResultados
           resultado={resultado}
+          consulta={consulta}
           erros={erros}
           carregando={carregando}
         />
