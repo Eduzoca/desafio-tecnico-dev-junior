@@ -58,7 +58,7 @@ Não há persistência de alterações, autenticação ou agendamento de aulas, 
 - Backend: 38 casos xUnit. São 24 testes de validação/fronteira, nove combinações de idioma/duração que executam 1.143 buscas no arquivo real e cinco testes adicionais do contrato HTTP.
 - As 1.143 buscas percorrem os 127 subconjuntos não vazios da semana, três idiomas e três durações. Um calendário independente, minuto a minuto, confere os oito professores, horários, carga semanal, motivos e ordenação. A faixa dessas buscas é `00:00–23:59`; os testes unitários específicos cobrem faixas menores. Isso não é uma prova para todos os dados possíveis.
 - Os testes de regras e dados reais instanciam apenas o serviço, sem subir a API. Os testes HTTP adicionais usam um servidor em memória (`WebApplicationFactory`), sem precisar iniciar um processo ou abrir uma porta.
-- Frontend: nove testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
+- Frontend: 14 testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
 - Na pasta `frontend`, execute `npm test`, `npm run build` e `npm run format:check`.
 - Os testes de interface usam jsdom e simulam a API e as animações. Eles não substituem a inspeção visual e a integração em um navegador real.
 - O workflow `.github/workflows/validacao.yml` executa testes backend, testes frontend, formatação e build em cada push e pull request.
@@ -206,3 +206,9 @@ Na entrevista técnica, você vai apresentar a solução e fazer uma pequena alt
 ### Interações e agenda semanal
 
 Os idiomas são selecionados por controles de rádio. O formulário apresenta a carga semanal e orientações sobre a faixa de horário. Ao selecionar um horário de um professor, a agenda exibe os sete dias da semana, destacando apenas os dias consultados. Os dados são recorrentes: não há datas específicas, reservas ou disciplinas além dos três idiomas do enunciado. Alterar os filtros requer uma nova busca; resultados e agenda continuam vinculados à consulta enviada. O fundo Three.js responde ao mouse com GSAP, sem exigir essa interação para usar a aplicação.
+
+### Semana completa e feedback de idioma
+
+Após uma busca, o botão “Ver disponibilidade da semana inteira” consulta os sete dias individualmente pela mesma API, mantendo idioma, faixa e duração. Mostra todos os professores e permite expandir cada dia com horários livres. A consulta é complementar: disponibilidade em dias separados não significa que exista um horário comum entre eles. Falhas não são apresentadas como indisponibilidade; há cancelamento e opção de tentar novamente.
+
+Bandeiras SVG representativas de Reino Unido, Espanha e França acompanham a seleção dos idiomas e voam brevemente com GSAP. Elas são decorativas; os nomes dos idiomas permanecem explícitos. Com movimento reduzido, somente o indicador estático é exibido. O Three.js mostra um globo com “Hello!”, “¡Hola!” e “Bonjour!”, com movimento suave e resposta ao mouse.

@@ -1,3 +1,4 @@
+import { LanguageFeedback } from "./LanguageFeedback";
 import { useState } from "react";
 import { Check, Search, LoaderCircle, CalendarDays } from "lucide-react";
 import type { BuscaRequest } from "../types";
@@ -48,6 +49,7 @@ export function BuscaForm({
             </label>
           ))}
         </fieldset>
+        <LanguageFeedback idioma={idioma} />
         <fieldset className="dias">
           <legend>Dias da semana</legend>
           {diasSemana.map(([valor, nome]) => (

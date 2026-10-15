@@ -20,36 +20,78 @@ export function createHeroScene(host: HTMLDivElement): () => void {
   camera.position.z = 12;
   const group = new THREE.Group();
   scene.add(group);
-  const geometry = new THREE.TorusGeometry(1, 0.012, 8, 96);
-  const materials = [0xcc213a, 0x0057a5, 0xedc006].map(
-    (color) =>
-      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.22 }),
-  );
-  const rings = materials.map((material, index) => {
-    const ring = new THREE.Mesh(geometry, material);
-    ring.position.set(
-      index === 0 ? -3.4 : index === 1 ? 3.8 : 0.4,
-      index === 2 ? -2.5 : 1.1,
-      -index,
+  const globe = new THREE.Group();
+  globe.position.set(3.3, 0.35, -1);
+  group.add(globe);
+  const geometry = new THREE.TorusGeometry(1.8, 0.009, 6, 96);
+  const materials = [
+    new THREE.MeshBasicMaterial({
+      color: 0x0057a5,
+      transparent: true,
+      opacity: 0.14,
+    }),
+  ];
+  for (let i = 0; i < 8; i++) {
+    const meridian = new THREE.Mesh(geometry, materials[0]);
+    meridian.rotation.y = (i * Math.PI) / 8;
+    globe.add(meridian);
+  }
+  for (const latitude of [-0.65, -0.35, 0, 0.35, 0.65]) {
+    const ring = new THREE.Mesh(geometry, materials[0]);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = latitude * 1.8;
+    ring.scale.setScalar(Math.sqrt(1 - latitude * latitude));
+    globe.add(ring);
+  }
+  globe.rotation.z = -0.18;
+  const textures: THREE.CanvasTexture[] = [];
+  const labels: THREE.SpriteMaterial[] = [];
+  ["Hello!", "¡Hola!", "Bonjour!"].forEach((text, index) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 384;
+    canvas.height = 160;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.fillStyle = ["#0057a5", "#cc213a", "#061f35"][index];
+    context.beginPath();
+    context.roundRect(8, 8, 368, 126, 30);
+    context.fill();
+    context.beginPath();
+    context.moveTo(65, 130);
+    context.lineTo(65, 156);
+    context.lineTo(95, 130);
+    context.fill();
+    context.font = "bold 55px sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillStyle = "white";
+    context.fillText(text, 192, 72);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    textures.push(texture);
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0.48,
+      depthTest: false,
+    });
+    labels.push(material);
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(1.65, 0.69, 1);
+    sprite.position.set(
+      index === 1 ? 1.6 : -1.65,
+      index === 0 ? 1.2 : index === 1 ? 0.2 : -1.25,
+      1,
     );
-    ring.scale.setScalar(index === 2 ? 0.6 : 1.9);
-    ring.rotation.set(0.4 + index * 0.3, 0.6, index);
-    group.add(ring);
-    return ring;
+    globe.add(sprite);
   });
   const timeline = gsap.timeline({ repeat: -1, yoyo: true, paused: true });
-  rings.forEach((ring, index) => {
-    timeline.to(
-      ring.rotation,
-      { x: "+=0.4", y: "+=0.65", duration: 14 + index * 2, ease: "sine.inOut" },
-      0,
-    );
-    timeline.to(
-      ring.position,
-      { y: "+=0.3", duration: 14 + index * 2, ease: "sine.inOut" },
-      0,
-    );
-  });
+  timeline.to(
+    globe.rotation,
+    { y: 0.35, x: 0.12, duration: 14, ease: "sine.inOut" },
+    0,
+  );
+  timeline.to(globe.position, { y: 0.6, duration: 14, ease: "sine.inOut" }, 0);
   const tiltX = gsap.quickTo(group.rotation, "x", {
     duration: 0.9,
     ease: "power2.out",
@@ -138,6 +180,8 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     tiltX.tween.kill();
     tiltY.tween.kill();
     geometry.dispose();
+    textures.forEach((texture) => texture.dispose());
+    labels.forEach((material) => material.dispose());
     materials.forEach((material) => material.dispose());
     renderer.dispose();
     renderer.domElement.remove();

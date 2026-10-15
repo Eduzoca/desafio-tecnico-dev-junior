@@ -1,3 +1,4 @@
+import { DisponibilidadeSemana } from "./DisponibilidadeSemana";
 import { Check, Clock, Plus, User, Users } from "lucide-react";
 import { Reveal } from "./Visual";
 import type { BuscaRequest, Resultado } from "../types";
@@ -55,6 +56,12 @@ export function BuscaResultados({
             </p>
           </div>
         </div>
+      )}
+      {consulta && !carregando && erros.length === 0 && (
+        <DisponibilidadeSemana
+          key={JSON.stringify(consulta)}
+          consulta={consulta}
+        />
       )}
       {resultado && (
         <>
