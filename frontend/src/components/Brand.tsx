@@ -28,6 +28,7 @@ export function Hero() {
   return (
     <>
       <Reveal className="hero-photo">
+        <HeroScene />
         <img
           src="/brand/hero-aluna-ia.png"
           alt="Imagem gerada por IA de uma mulher sorrindo com notebook"
@@ -65,7 +66,6 @@ export function Hero() {
             </li>
           </ul>
         </header>
-        <HeroScene />
       </Reveal>
     </>
   );

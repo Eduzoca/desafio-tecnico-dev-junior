@@ -1,8 +1,10 @@
+import type { BuscaRequest } from "../types";
+
 import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DisponibilidadeSemana } from "./DisponibilidadeSemana";
-const consulta = {
+const consulta: BuscaRequest = {
   idioma: "Inglês",
   dias: ["segunda"],
   inicioFaixa: "18:00",
@@ -79,7 +81,7 @@ it("mostra erro e permite nova tentativa quando um dia falha", async () => {
     }),
   );
   await screen.findByText(
-    "Não foi possível consultar a semana completa. Tente novamente.",
+    "Não foi possível concluir a busca. Tente novamente.",
   );
   expect(
     (

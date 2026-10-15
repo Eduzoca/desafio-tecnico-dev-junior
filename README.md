@@ -58,8 +58,8 @@ Não há persistência de alterações, autenticação ou agendamento de aulas, 
 - Backend: 38 casos xUnit. São 24 testes de validação/fronteira, nove combinações de idioma/duração que executam 1.143 buscas no arquivo real e cinco testes adicionais do contrato HTTP.
 - As 1.143 buscas percorrem os 127 subconjuntos não vazios da semana, três idiomas e três durações. Um calendário independente, minuto a minuto, confere os oito professores, horários, carga semanal, motivos e ordenação. A faixa dessas buscas é `00:00–23:59`; os testes unitários específicos cobrem faixas menores. Isso não é uma prova para todos os dados possíveis.
 - Os testes de regras e dados reais instanciam apenas o serviço, sem subir a API. Os testes HTTP adicionais usam um servidor em memória (`WebApplicationFactory`), sem precisar iniciar um processo ou abrir uma porta.
-- Frontend: 15 testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
-- Na pasta `frontend`, execute `npm test`, `npm run build` e `npm run format:check`.
+- Frontend: 25 testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
+- Na pasta `frontend`, execute `npm test`, `npm run lint`, `npm run build` e `npm run format:check`.
 - Os testes de interface usam jsdom e simulam a API e as animações. Eles não substituem a inspeção visual e a integração em um navegador real.
 - O workflow `.github/workflows/validacao.yml` executa testes backend, testes frontend, formatação e build em cada push e pull request.
 
@@ -211,6 +211,14 @@ Os idiomas são selecionados por controles de rádio. O formulário apresenta a 
 
 Após uma busca, o botão “Ver disponibilidade da semana inteira” consulta os sete dias individualmente pela mesma API, mantendo idioma, faixa e duração. O FullCalendar mostra um professor por vez em uma semana compacta de 260 px, com seleção de professor e botão de abrir/recolher. As opções adicionais de cada dia ficam no popover “mais”. A consulta é complementar: disponibilidade em dias separados não significa que exista um horário comum entre eles. Falhas não são apresentadas como indisponibilidade; há cancelamento e opção de tentar novamente.
 
-Bandeiras do pacote country-flag-icons aparecem como detalhes de 14 px dentro das opções de idioma. GSAP anima discretamente o ícone e um brilho dentro do controle selecionado. Elas são decorativas; os nomes dos idiomas permanecem explícitos. Com movimento reduzido, somente o indicador estático é exibido. Em uma área própria ao lado do formulário, o Three.js mostra um globo com “Hello!”, “¡Hola!” e “Bonjour!”, com movimento suave e resposta ao mouse.
+Bandeiras do pacote country-flag-icons aparecem como detalhes de 14 px dentro das opções de idioma. GSAP anima discretamente o ícone e um brilho dentro do controle selecionado. Elas são decorativas; os nomes dos idiomas permanecem explícitos. Com movimento reduzido, somente o indicador estático é exibido. Atrás da modelo, em uma camada decorativa responsiva, o Three.js mostra um globo com “Hello!”, “¡Hola!” e “Bonjour!”, com movimento suave e resposta ao mouse.
 
 As opções do enunciado, os padrões iniciais e os metadados visuais ficam centralizados em `frontend/src/config.ts`; professores, dias disponíveis e horários continuam vindo da API. Valores de layout e animação são configurações de apresentação, não dados fictícios. Calendário e ícones usam pacotes mantidos externamente, carregando o calendário sob demanda.
+
+### Revisão focada de manutenção
+
+O cliente HTTP compartilhado valida as respostas antes de renderizá-las, distingue erros de contrato, rede, servidor e timeout e remove timers/listeners no encerramento. A agenda semanal usa um hook próprio e agregação pura por identificador de professor e dia tipado; filtros novos descartam respostas antigas. A API e o JSON original permanecem inalterados.
+
+O globo separa modelo, saudações, parâmetros visuais e ciclo de renderização. O contêiner da foto captura o mouse; a camada gráfica não intercepta cliques. O CSS define o tamanho entre 320 e 600 px no desktop e até 280 px no celular. Movimento reduzido ou falta de WebGL usam um ícone estático; a cena pausa fora da tela e limpa seus recursos ao desmontar.
+
+ESLint com TypeScript e regras de hooks integra a validação contínua. Em 15/10/2026, os 25 testes frontend e 38 backend passaram; a auditoria npm não apontou vulnerabilidades conhecidas. A inspeção visual em navegador permanece pendente: a ferramenta não conseguiu iniciar por erro de arquivo ausente. Testes em jsdom não certificam a aparência nem a renderização WebGL real.

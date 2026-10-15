@@ -12,10 +12,10 @@ export const diasSemana = [
   ["sexta", "Sexta"],
   ["sabado", "Sábado"],
   ["domingo", "Domingo"],
-];
+] as const;
 export const buscaInicial = {
   idioma: idiomas[1].nome,
-  dias: [diasSemana[0][0]],
+  dias: [diasSemana[0][0]] as Array<(typeof diasSemana)[number][0]>,
   inicioFaixa: "18:00",
   fimFaixa: "20:00",
   duracaoMinutos: duracoes[1],

@@ -1,85 +1,17 @@
-import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
-import type { BuscaRequest, Resultado } from "../types";
-import { diasSemana, tempoLimiteBusca } from "../config";
+import { lazy, Suspense, useId, useState } from "react";
+import type { BuscaRequest } from "../types";
+import { useDisponibilidadeSemana } from "../hooks/useDisponibilidadeSemana";
 const AgendaCalendar = lazy(() => import("./AgendaCalendar"));
-type ProfessorSemana = {
-  id: number;
-  nome: string;
-  dias: Record<string, string[]>;
-  motivo: string;
-};
 export function DisponibilidadeSemana({
   consulta,
 }: {
   consulta: BuscaRequest;
 }) {
-  const [professores, setProfessores] = useState<ProfessorSemana[] | null>(
-    null,
-  );
+  const { professores, carregando, erro, consultar } =
+    useDisponibilidadeSemana(consulta);
   const [aberto, setAberto] = useState(false);
   const [professorId, setProfessorId] = useState<number | null>(null);
   const painelId = useId();
-  const [carregando, setCarregando] = useState(false);
-  const [erro, setErro] = useState("");
-  const controle = useRef<AbortController | null>(null);
-  useEffect(
-    () => () => {
-      controle.current?.abort();
-      controle.current = null;
-    },
-    [],
-  );
-  async function consultar() {
-    controle.current?.abort();
-    const abort = new AbortController();
-    controle.current = abort;
-    setCarregando(true);
-    setErro("");
-    const timer = setTimeout(() => abort.abort(), tempoLimiteBusca);
-    try {
-      const respostas = await Promise.all(
-        diasSemana.map(async ([dia]) => {
-          const response = await fetch("/api/professores/busca", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...consulta, dias: [dia] }),
-            signal: abort.signal,
-          });
-          if (!response.ok) throw new Error("Falha ao consultar a semana");
-          return { dia, resultado: (await response.json()) as Resultado };
-        }),
-      );
-      if (abort.signal.aborted) return;
-      const mapa = new Map<number, ProfessorSemana>();
-      for (const { dia, resultado } of respostas) {
-        for (const p of [...resultado.professores, ...resultado.naoElegiveis]) {
-          const professor = mapa.get(p.id) ?? {
-            id: p.id,
-            nome: p.nome,
-            dias: {},
-            motivo: "",
-          };
-          if ("horarios" in p) professor.dias[dia] = p.horarios;
-          else professor.motivo = p.motivo;
-          mapa.set(p.id, professor);
-        }
-      }
-      setProfessores(
-        [...mapa.values()].sort((a, b) =>
-          a.nome.localeCompare(b.nome, "pt-BR"),
-        ),
-      );
-    } catch {
-      if (controle.current === abort)
-        setErro(
-          "Não foi possível consultar a semana completa. Tente novamente.",
-        );
-      abort.abort();
-    } finally {
-      clearTimeout(timer);
-      if (controle.current === abort) setCarregando(false);
-    }
-  }
   const selecionado =
     professores?.find((p) => p.id === professorId) ??
     professores?.find((p) => Object.keys(p.dias).length > 0) ??

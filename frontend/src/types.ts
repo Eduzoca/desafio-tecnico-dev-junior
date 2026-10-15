@@ -1,3 +1,6 @@
+import type { diasSemana } from "./config";
+export type DiaSemana = (typeof diasSemana)[number][0];
+export type AgendaSemana = Partial<Record<DiaSemana, string[]>>;
 export type Resultado = {
   professores: {
     id: number;
@@ -9,7 +12,7 @@ export type Resultado = {
 };
 export type BuscaRequest = {
   idioma: string;
-  dias: string[];
+  dias: DiaSemana[];
   inicioFaixa: string;
   fimFaixa: string;
   duracaoMinutos: number;

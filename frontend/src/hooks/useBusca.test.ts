@@ -1,7 +1,9 @@
+import type { BuscaRequest } from "../types";
+
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { useBusca } from "./useBusca";
-const consulta = {
+const consulta: BuscaRequest = {
   idioma: "Espanhol",
   dias: ["segunda"],
   inicioFaixa: "18:00",

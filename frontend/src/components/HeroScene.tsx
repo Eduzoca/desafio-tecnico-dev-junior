@@ -25,7 +25,7 @@ export function HeroScene() {
       void import("./heroSceneRenderer")
         .then(({ createHeroScene }) => {
           if (!disposed && current === generation)
-            cleanup = createHeroScene(host);
+            cleanup = createHeroScene(host, host.parentElement ?? host);
         })
         .catch(() => {});
     };

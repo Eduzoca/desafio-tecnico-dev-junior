@@ -2,7 +2,7 @@ import { LanguageOption } from "./LanguageFeedback";
 import { idiomas, duracoes, buscaInicial } from "../config";
 import { useState } from "react";
 import { Check, Search, LoaderCircle, CalendarDays } from "lucide-react";
-import type { BuscaRequest } from "../types";
+import type { BuscaRequest, DiaSemana } from "../types";
 import { diasSemana } from "./ResumoBusca";
 export function BuscaForm({
   carregando,
@@ -12,7 +12,7 @@ export function BuscaForm({
   onSearch: (request: BuscaRequest) => Promise<void>;
 }) {
   const [idioma, setIdioma] = useState<string>(buscaInicial.idioma);
-  const [dias, setDias] = useState<string[]>(buscaInicial.dias);
+  const [dias, setDias] = useState<DiaSemana[]>(buscaInicial.dias);
   const [inicioFaixa, setInicio] = useState(buscaInicial.inicioFaixa);
   const [fimFaixa, setFim] = useState(buscaInicial.fimFaixa);
   const [duracaoMinutos, setDuracao] = useState(buscaInicial.duracaoMinutos);

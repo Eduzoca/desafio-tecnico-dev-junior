@@ -1,3 +1,4 @@
+import type { AgendaSemana } from "../types";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import ptBr from "@fullcalendar/core/locales/pt-br";
@@ -6,7 +7,7 @@ export default function AgendaCalendar({
   dias,
   duracao,
 }: {
-  dias: Record<string, string[]>;
+  dias: AgendaSemana;
   duracao: number;
 }) {
   const events = diasSemana.flatMap(([dia], index) =>
