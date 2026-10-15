@@ -1,4 +1,3 @@
-import { HeroScene } from "./HeroScene";
 import { Clock, Globe, Mail, User, Check, ArrowUpRight } from "lucide-react";
 import { Reveal, Stars } from "./Visual";
 export function BrandHeader() {
@@ -28,7 +27,6 @@ export function Hero() {
   return (
     <>
       <Reveal className="hero-photo">
-        <HeroScene />
         <img
           src="/brand/hero-aluna-ia.png"
           alt="Imagem gerada por IA de uma mulher sorrindo com notebook"

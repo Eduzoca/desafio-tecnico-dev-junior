@@ -219,7 +219,7 @@ As opções do enunciado, os padrões iniciais e os metadados visuais ficam cent
 
 O cliente HTTP compartilhado valida as respostas antes de renderizá-las, distingue erros de contrato, rede, servidor e timeout e remove timers/listeners no encerramento. A agenda semanal usa um hook próprio e agregação pura por identificador de professor e dia tipado; filtros novos descartam respostas antigas. A API e o JSON original permanecem inalterados.
 
-O globo separa modelo, saudações, parâmetros visuais e ciclo de renderização. O contêiner da foto captura o mouse; a camada gráfica não intercepta cliques. O CSS limita a cena à largura da coluna da foto, até 600 px no desktop e 280 px no celular. A câmera considera o volume dos balões e a rotação para evitar cortes. Movimento reduzido ou falta de WebGL usam um ícone estático; a cena pausa fora da tela e limpa seus recursos ao desmontar.
+O globo separa modelo, saudações, parâmetros visuais e ciclo de renderização. O contêiner principal observa o mouse; a camada gráfica não intercepta cliques. A cena fica no fundo do hero, atrás de todas as colunas, com canvas de 720–1080 px no desktop e tamanho adaptado no celular. A câmera considera o volume dos balões e a rotação para evitar cortes. Movimento reduzido ou falta de WebGL usam um ícone estático; a cena pausa fora da tela e limpa seus recursos ao desmontar.
 
 ESLint com TypeScript e regras de hooks integra a validação contínua. Em 15/10/2026, os 25 testes frontend e 38 backend passaram; a auditoria npm não apontou vulnerabilidades conhecidas. A inspeção visual em navegador permanece pendente: a ferramenta não conseguiu iniciar por erro de arquivo ausente. Testes em jsdom não certificam a aparência nem a renderização WebGL real.
 

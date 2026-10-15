@@ -216,12 +216,12 @@ main > :not(.hero-background) {
   object-position: bottom;
 }
 .hero-scene {
-  --globe-size: min(100%, 600px);
+  --globe-size: clamp(720px, 65vw, 1080px);
   position: absolute;
   width: var(--globe-size);
   aspect-ratio: 1;
-  left: 50%;
-  top: 42%;
+  left: calc(50% - min(20vw, 300px));
+  top: 50%;
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
@@ -963,7 +963,9 @@ details li span {
     padding: 32px 24px;
   }
   .hero-scene {
-    --globe-size: min(280px, 100%);
+    --globe-size: min(620px, 140vw);
+    left: 50%;
+    top: 280px;
   }
 }
 @media (max-width: 520px) {

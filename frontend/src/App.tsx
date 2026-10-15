@@ -1,3 +1,4 @@
+import { HeroScene } from "./components/HeroScene";
 import {
   BrandHeader,
   BrandFooter,
@@ -17,6 +18,7 @@ export default function App() {
         <div className="hero-background" aria-hidden="true">
           <div className="blob blob-red" />
           <div className="blob blob-blue" />
+          <HeroScene />
         </div>
         <div className="layout" id="busca">
           <Hero />

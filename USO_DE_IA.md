@@ -35,3 +35,5 @@ Na revisão focada autorizada, o Codex moveu o globo para trás da modelo, separ
 Após a pessoa usuária fornecer uma captura com balões cortados e sobrepostos ao texto, a largura da cena foi limitada à coluna da foto. O enquadramento passou a considerar uma esfera contendo globo e balões, incluindo a animação; os balões foram reduzidos e aproximados do globo. Três testes verificam a projeção dos cantos dos balões em diferentes proporções de tela. A validação visual em navegador continua pendente.
 
 Foi acrescentado um efeito de três bandeiras de 10 px durante 0,5 segundo ao clicar na opção de idioma, inclusive quando ela já está selecionada. O efeito fica dentro do controle, não captura eventos e é desativado com movimento reduzido. Cliques repetidos reiniciam a animação com limpeza do contexto GSAP anterior.
+
+Após nova referência visual, o globo saiu da coluna da modelo e passou para o fundo compartilhado do hero. O canvas maior atravessa visualmente as regiões da foto e do texto, mas fica abaixo de todas as colunas. Os balões usam menor opacidade para preservar a leitura.
