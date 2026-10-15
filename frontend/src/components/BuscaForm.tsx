@@ -21,7 +21,11 @@ export function BuscaForm({
         void onSearch({ idioma, dias, inicioFaixa, fimFaixa, duracaoMinutos });
       }}
     >
-      <h2>Sua próxima aula</h2>
+      <div className="form-heading">
+        <span className="marca">VAMOS COMEÇAR?</span>
+        <h2>Encontre seu professor</h2>
+        <p>Preencha suas preferências abaixo.</p>
+      </div>
       <fieldset disabled={carregando}>
         <label>
           Quero aprender

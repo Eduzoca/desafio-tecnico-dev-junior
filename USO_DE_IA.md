@@ -12,6 +12,8 @@ Os testes e a compilação ajudam a verificar a entrega, mas não substituem a l
 
 ## Aprofundamento dentro do enunciado
 
+Na revisão visual seguinte, o Codex reorganizou o CSS por seções, refinou o hero em três colunas, os estados do formulário e os cartões de resultados, mantendo Poppins local, a paleta da marca e Lucide. A seção “O caminho” explica o fluxo de busca com a hierarquia editorial da referência. Essa revisão foi validada por testes e build, com a inspeção visual em navegador ainda pendente pelo bloqueio previamente relatado.
+
 O Codex preparou índices de agenda por dia, adicionou resumo de resultados e prévia semanal, proteção contra respostas antigas e timeout, testes com todos os dados reais e validação contínua no GitHub. Os nove cenários parametrizados do arquivo real executam 1.143 buscas e comparam a solução com um calendário independente de minutos livres. Não foram alterados os professores nem o contrato de resposta pedido.
 
 Um segundo erro ocorreu ao padronizar JSON inválido: somente `UseStatusCodePages` não tratava o caso no ambiente de desenvolvimento, onde a Minimal API lançava `BadHttpRequestException`. Três testes HTTP falharam ao tentar ler a resposta como JSON. Foi configurado `ThrowOnBadRequest = false` para que o tratamento de HTTP 400 também funcionasse nesse ambiente; os testes passaram após a correção.

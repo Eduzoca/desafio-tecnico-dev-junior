@@ -1,4 +1,4 @@
-import { Clock, Globe, Mail, Search, User } from "lucide-react";
+import { Clock, Globe, Mail, User, Check, ArrowUpRight } from "lucide-react";
 import { Reveal, Stars } from "./Visual";
 export function BrandHeader() {
   return (
@@ -17,7 +17,7 @@ export function BrandHeader() {
           />
         </a>
         <a className="nav-link" href="#busca">
-          <Search size={16} /> Encontre seu professor
+          Encontre seu professor <ArrowUpRight size={16} aria-hidden="true" />
         </a>
       </nav>
     </>
@@ -26,7 +26,6 @@ export function BrandHeader() {
 export function Hero() {
   return (
     <>
-      {" "}
       <Reveal className="hero-photo">
         <img
           src="/brand/hero-aluna.webp"
@@ -40,11 +39,12 @@ export function Hero() {
         <header>
           <span className="marca">UM PROFESSOR SÓ PRA VOCÊ</span>
           <h1>
-            Aulas particulares de idiomas <em>no seu horário.</em>
+            Um professor só pra você. <em>No seu horário.</em>
           </h1>
           <p>
-            Escolha o idioma, os dias e a duração da aula. Encontre um professor
-            que pode acompanhar seu aprendizado, no seu ritmo.
+            Inglês, Espanhol ou Francês. Escolha os dias e encontre quem pode
+            acompanhar seu aprendizado.{" "}
+            <strong>Uma aula que cabe na sua rotina.</strong>
           </p>
           <div className="hero-badge">
             <Stars />
@@ -52,15 +52,15 @@ export function Hero() {
           </div>
           <ul className="hero-benefits">
             <li>
-              <User />
+              <Check aria-hidden="true" />
               Aulas individuais e personalizadas
             </li>
             <li>
-              <Clock />O mesmo horário nos dias escolhidos
+              <Check aria-hidden="true" />O mesmo horário nos dias escolhidos
             </li>
             <li>
-              <Globe />
-              Inglês, Espanhol ou Francês
+              <Check aria-hidden="true" />
+              Aulas de 30, 60 ou 90 minutos
             </li>
           </ul>
         </header>
@@ -112,6 +112,59 @@ export function Stories() {
               </div>
               <blockquote>{aluno.texto}</blockquote>
             </article>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+export function ComoFunciona() {
+  return (
+    <section className="como-funciona" aria-labelledby="como-titulo">
+      <Reveal className="como-intro">
+        <span className="marca">O CAMINHO</span>
+        <h2 id="como-titulo">
+          Seu próximo passo.
+          <br />
+          Do seu jeito.
+        </h2>
+        <p>
+          Da escolha do idioma ao horário em comum: tudo começa com a sua
+          disponibilidade.
+        </p>
+      </Reveal>
+      <div className="passos">
+        {[
+          {
+            numero: "01",
+            Icone: Globe,
+            titulo: "Escolha seu idioma",
+            texto:
+              "Inglês, Espanhol ou Francês. Qual vai ser seu próximo desafio?",
+          },
+          {
+            numero: "02",
+            Icone: Clock,
+            titulo: "Conte sua rotina",
+            texto: "Selecione os dias, a faixa de horário e a duração da aula.",
+          },
+          {
+            numero: "03",
+            Icone: User,
+            titulo: "Encontre seu professor",
+            texto:
+              "Compare os horários disponíveis e visualize como ficaria sua semana.",
+          },
+        ].map(({ numero, Icone, titulo, texto }, i) => (
+          <Reveal className="passo" key={numero} delay={i * 0.1}>
+            <div className="passo-icon">
+              <Icone size={21} aria-hidden="true" />
+            </div>
+            <div>
+              <span className="passo-numero">{numero}</span>
+              <h3>{titulo}</h3>
+              <p>{texto}</p>
+            </div>
           </Reveal>
         ))}
       </div>

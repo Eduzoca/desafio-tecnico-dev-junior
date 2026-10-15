@@ -15,7 +15,12 @@ export function BuscaResultados({
   carregando: boolean;
 }) {
   return (
-    <section className="resultados" aria-live="polite" aria-busy={carregando}>
+    <section
+      className="resultados"
+      aria-label="Resultados da busca"
+      aria-live="polite"
+      aria-busy={carregando}
+    >
       {erros.length > 0 && (
         <div className="erro" role="alert">
           <h2>Vamos conferir?</h2>
@@ -68,7 +73,7 @@ export function BuscaResultados({
           <div className="results-grid">
             {resultado.professores.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.08}>
-                <article>
+                <article className="professor-card">
                   <div className="professor">
                     <span className="avatar">
                       <User />

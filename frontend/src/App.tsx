@@ -1,5 +1,11 @@
 import { MotionConfig } from "motion/react";
-import { BrandHeader, BrandFooter, Hero, Stories } from "./components/Brand";
+import {
+  BrandHeader,
+  BrandFooter,
+  Hero,
+  Stories,
+  ComoFunciona,
+} from "./components/Brand";
 import { BuscaForm } from "./components/BuscaForm";
 import { BuscaResultados } from "./components/BuscaResultados";
 import { Reveal } from "./components/Visual";
@@ -26,6 +32,7 @@ export default function App() {
           erros={erros}
           carregando={carregando}
         />
+        <ComoFunciona />
         <Stories />
       </main>
       <BrandFooter />
