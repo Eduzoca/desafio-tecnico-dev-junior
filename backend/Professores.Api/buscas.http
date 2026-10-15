@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:5000
+
+###
+POST {{baseUrl}}/api/professores/busca
+Content-Type: application/json
+
+{"idioma":"Espanhol","dias":["segunda"],"inicioFaixa":"18:00","fimFaixa":"20:00","duracaoMinutos":60}
+
+###
+POST {{baseUrl}}/api/professores/busca
+Content-Type: application/json
+
+{"idioma":"Inglês","dias":["segunda","quarta"],"inicioFaixa":"18:00","fimFaixa":"21:00","duracaoMinutos":60}
+
+###
+POST {{baseUrl}}/api/professores/busca
+Content-Type: application/json
+
+{"idioma":"Francês","dias":["segunda"],"inicioFaixa":"18:00","fimFaixa":"20:00","duracaoMinutos":60}
+
+###
+POST {{baseUrl}}/api/professores/busca
+Content-Type: application/json
+
+{"idioma":"Inglês","dias":[],"inicioFaixa":"20:00","fimFaixa":"18:00","duracaoMinutos":45}

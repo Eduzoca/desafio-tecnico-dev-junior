@@ -2,16 +2,25 @@ using System.Globalization;
 
 namespace Professores.Api;
 
-public record Disponibilidade(string Dia, string Inicio, string Fim);
-public record Aula(string Dia, string Inicio, int DuracaoMinutos);
-public record Professor(int Id, string Nome, string[] Idiomas, bool AgendaBloqueada, Disponibilidade[] Disponibilidade, Aula[] AulasMarcadas);
-public record BuscaRequest(string? Idioma, string[]? Dias, string? InicioFaixa, string? FimFaixa, int DuracaoMinutos);
-public record Elegivel(int Id, string Nome, int AulasNaSemana, string[] Horarios);
-public record NaoElegivel(int Id, string Nome, string Motivo);
-public record BuscaResponse(Elegivel[] Professores, NaoElegivel[] NaoElegiveis);
-
-public class BuscaService(IEnumerable<Professor> professores)
+public class BuscaService
 {
+    private readonly AgendaProfessor[] agendas;
+    private record Intervalo(int Inicio, int Fim)
+    {
+        public bool Contem(int inicio, int fim) => inicio >= Inicio && fim <= Fim;
+        
+        public bool Sobrepoe(int inicio, int fim) => inicio < Fim && fim > Inicio;
+    }
+    private record AgendaProfessor(Professor Professor,
+        ILookup<string, Intervalo> Disponibilidade, ILookup<string, Intervalo> Aulas);
+
+    public BuscaService(IEnumerable<Professor> professores)
+    {
+        
+        agendas = professores.Select(p => new AgendaProfessor(p,
+            p.Disponibilidade.ToLookup(d => d.Dia, d => new Intervalo(Minutos(d.Inicio), Minutos(d.Fim))),
+            p.AulasMarcadas.ToLookup(a => a.Dia, a => new Intervalo(Minutos(a.Inicio), Minutos(a.Inicio) + a.DuracaoMinutos)))).ToArray();
+    }
     private static readonly string[] DiasValidos = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"];
     private static bool Horario(string? valor, out TimeOnly hora) => TimeOnly.TryParseExact(valor, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out hora);
     private static int Minutos(string valor)
@@ -41,8 +50,10 @@ public class BuscaService(IEnumerable<Professor> professores)
         var excluidos = new List<NaoElegivel>();
         var inicio = Minutos(request.InicioFaixa!);
         var fim = Minutos(request.FimFaixa!);
-        foreach (var professor in professores)
+        var dias = request.Dias!.Distinct().ToArray();
+        foreach (var agenda in agendas)
         {
+            var professor = agenda.Professor;
             string? motivo = null;
             var horarios = new List<string>();
             if (!professor.Idiomas.Any(i => string.Equals(i, request.Idioma!.Trim(), StringComparison.OrdinalIgnoreCase))) motivo = "Não ensina o idioma";
@@ -52,9 +63,9 @@ public class BuscaService(IEnumerable<Professor> professores)
                 for (var candidato = (inicio + 29) / 30 * 30; candidato + request.DuracaoMinutos <= fim; candidato += 30)
                 {
                     var termino = candidato + request.DuracaoMinutos;
-                    if (request.Dias!.Distinct().All(dia =>
-                        professor.Disponibilidade.Any(d => d.Dia == dia && candidato >= Minutos(d.Inicio) && termino <= Minutos(d.Fim)) &&
-                        !professor.AulasMarcadas.Any(a => a.Dia == dia && candidato < Minutos(a.Inicio) + a.DuracaoMinutos && termino > Minutos(a.Inicio))))
+                    if (dias.All(dia =>
+                        agenda.Disponibilidade[dia].Any(bloco => bloco.Contem(candidato, termino)) &&
+                        !agenda.Aulas[dia].Any(aula => aula.Sobrepoe(candidato, termino))))
                         horarios.Add($"{candidato / 60:00}:{candidato % 60:00}");
                 }
                 if (horarios.Count == 0) motivo = "Sem horário em comum nos dias pedidos";
