@@ -50,6 +50,45 @@ export function createHeroScene(host: HTMLDivElement): () => void {
       0,
     );
   });
+  const tiltX = gsap.quickTo(group.rotation, "x", {
+    duration: 0.9,
+    ease: "power2.out",
+  });
+  const tiltY = gsap.quickTo(group.rotation, "y", {
+    duration: 0.9,
+    ease: "power2.out",
+  });
+  const surface = host.closest("main");
+  const pointer = (event: PointerEvent) => {
+    if (event.pointerType !== "mouse" || !visible || document.hidden || lost)
+      return;
+    const bounds = host.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    tiltX(
+      Math.max(
+        -0.15,
+        Math.min(
+          0.15,
+          ((event.clientY - bounds.top) / bounds.height) * 0.3 - 0.15,
+        ),
+      ),
+    );
+    tiltY(
+      Math.max(
+        -0.2,
+        Math.min(
+          0.2,
+          ((event.clientX - bounds.left) / bounds.width) * 0.4 - 0.2,
+        ),
+      ),
+    );
+  };
+  const reset = () => {
+    tiltX(0);
+    tiltY(0);
+  };
+  surface?.addEventListener("pointermove", pointer);
+  surface?.addEventListener("pointerleave", reset);
   const render = () => renderer.render(scene, camera);
   let visible = false;
   let lost = false;
@@ -94,6 +133,10 @@ export function createHeroScene(host: HTMLDivElement): () => void {
     renderer.domElement.removeEventListener("webglcontextrestored", onRestored);
     gsap.ticker.remove(render);
     timeline.kill();
+    surface?.removeEventListener("pointermove", pointer);
+    surface?.removeEventListener("pointerleave", reset);
+    tiltX.tween.kill();
+    tiltY.tween.kill();
     geometry.dispose();
     materials.forEach((material) => material.dispose());
     renderer.dispose();

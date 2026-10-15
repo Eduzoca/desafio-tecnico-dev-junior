@@ -58,7 +58,9 @@ export function BuscaResultados({
       )}
       {resultado && (
         <>
-          <span className="marca">SUA BUSCA</span>
+          <span className="marca">
+            PROFESSORES DE {consulta?.idioma.toLocaleUpperCase("pt-BR")}
+          </span>
           <h2>
             {resultado.professores.length
               ? `${resultado.professores.length} professor(es) disponíveis`

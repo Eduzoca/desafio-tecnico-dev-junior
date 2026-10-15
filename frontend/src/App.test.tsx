@@ -22,6 +22,34 @@ afterEach(() => {
 });
 
 describe("Busca de professores", () => {
+  it("consulta o idioma selecionado e distingue dias não consultados na agenda", async () => {
+    fetchMock.mockResolvedValue(response(sucesso));
+    render(<App />);
+    await userEvent.click(screen.getByRole("radio", { name: "Francês" }));
+    expect(
+      screen.getByText("Sua semana: 1 dia(s) · 60 min de Francês"),
+    ).toBeTruthy();
+    await userEvent.click(
+      screen.getByRole("button", { name: "Encontrar professores" }),
+    );
+    await screen.findByRole("heading", { name: "Ana" });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).idioma).toBe("Francês");
+    expect(screen.getByText("PROFESSORES DE FRANCÊS")).toBeTruthy();
+    const slot = screen.getByRole("button", {
+      name: "Ver semana de Ana às 18:00",
+    });
+    await userEvent.click(slot);
+    expect(slot.getAttribute("aria-pressed")).toBe("true");
+    expect(
+      screen.getByRole("list", { name: "Agenda semanal de Ana" }).children
+        .length,
+    ).toBe(7);
+    expect(screen.getAllByText("Não consultado")).toHaveLength(6);
+    await userEvent.click(slot);
+    expect(
+      screen.queryByRole("list", { name: "Agenda semanal de Ana" }),
+    ).toBeNull();
+  });
   it("mostra a semana do horário escolhido usando os critérios da busca enviada", async () => {
     fetchMock.mockResolvedValue(response(sucesso));
     render(<App />);

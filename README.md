@@ -202,3 +202,7 @@ Se encontrar uma situação que as regras não cobrem, decida, implemente e regi
 6. O README é claro e registra as decisões.
 
 Na entrevista técnica, você vai apresentar a solução e fazer uma pequena alteração ao vivo.
+
+### Interações e agenda semanal
+
+Os idiomas são selecionados por controles de rádio. O formulário apresenta a carga semanal e orientações sobre a faixa de horário. Ao selecionar um horário de um professor, a agenda exibe os sete dias da semana, destacando apenas os dias consultados. Os dados são recorrentes: não há datas específicas, reservas ou disciplinas além dos três idiomas do enunciado. Alterar os filtros requer uma nova busca; resultados e agenda continuam vinculados à consulta enviada. O fundo Three.js responde ao mouse com GSAP, sem exigir essa interação para usar a aplicação.

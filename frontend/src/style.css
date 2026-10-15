@@ -973,3 +973,152 @@ details li span {
   width: 100%;
   height: 100%;
 }
+.idioma-opcoes {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 20px;
+}
+.idioma-opcoes legend {
+  margin-bottom: 10px;
+}
+.idioma-opcoes label {
+  flex: 1;
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+}
+.idioma-opcoes input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.idioma-opcoes span {
+  display: block;
+  padding: 11px 4px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 11px;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+.idioma-opcoes input:checked + span {
+  background: var(--brand-navy);
+  color: white;
+  border-color: var(--brand-navy);
+  box-shadow: 0 4px 12px #061f3520;
+}
+.idioma-opcoes input:focus-visible + span {
+  outline: 3px solid var(--brand-blue);
+  outline-offset: 3px;
+}
+.idioma-opcoes input:disabled + span {
+  opacity: 0.6;
+  cursor: wait;
+}
+.preferencias-feedback {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #edf6f2;
+  color: #216246;
+  font-size: 11px;
+  margin: 14px 0;
+}
+.preferencias-feedback svg {
+  flex-shrink: 0;
+}
+.preferencias-feedback[data-warning="true"] {
+  color: #8b4416;
+  background: #fff3e5;
+}
+.dias label:focus-within {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+form:focus-within {
+  box-shadow: 0 12px 44px #061f351c;
+}
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+.horarios button {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+.professor-card:focus-within {
+  border-color: var(--brand-blue);
+  box-shadow: 0 8px 24px #0057a514;
+}
+.agenda-instrucao {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 14px 0 0;
+}
+.previa-semanal h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.previa-semanal .agenda-semana {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 0;
+}
+.previa-semanal .agenda-semana li {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  font-size: 11px;
+}
+.previa-semanal .agenda-semana li[data-selected="true"] {
+  border-color: #0057a540;
+  background: #eef6ff;
+}
+.agenda-aula {
+  border-left: 3px solid var(--brand-blue);
+  padding-left: 7px;
+  color: var(--brand-navy);
+  font-weight: 700;
+}
+.agenda-sem-consulta {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.loading-spinner {
+  animation: feedback-spin 1s linear infinite;
+}
+@keyframes feedback-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (hover: hover) {
+  .idioma-opcoes label:hover span {
+    border-color: var(--brand-blue);
+  }
+  .dias label:hover {
+    border-color: var(--brand-red);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
+  button:not(:disabled):active {
+    transform: none;
+  }
+}

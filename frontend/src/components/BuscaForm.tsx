@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Search } from "lucide-react";
+import { Check, Search, LoaderCircle, CalendarDays } from "lucide-react";
 import type { BuscaRequest } from "../types";
 import { diasSemana } from "./ResumoBusca";
 export function BuscaForm({
@@ -14,6 +14,12 @@ export function BuscaForm({
   const [inicioFaixa, setInicio] = useState("18:00");
   const [fimFaixa, setFim] = useState("20:00");
   const [duracaoMinutos, setDuracao] = useState(60);
+  const minutos = (hora: string) => {
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  };
+  const cabeNaFaixa =
+    minutos(fimFaixa) - minutos(inicioFaixa) >= duracaoMinutos;
   return (
     <form
       onSubmit={(event) => {
@@ -27,14 +33,21 @@ export function BuscaForm({
         <p>Preencha suas preferências abaixo.</p>
       </div>
       <fieldset disabled={carregando}>
-        <label>
-          Quero aprender
-          <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
-            {["Inglês", "Espanhol", "Francês"].map((i) => (
-              <option key={i}>{i}</option>
-            ))}
-          </select>
-        </label>
+        <fieldset className="idioma-opcoes">
+          <legend>Quero aprender</legend>
+          {["Inglês", "Espanhol", "Francês"].map((opcao) => (
+            <label key={opcao}>
+              <input
+                type="radio"
+                name="idioma"
+                value={opcao}
+                checked={idioma === opcao}
+                onChange={() => setIdioma(opcao)}
+              />
+              <span>{opcao}</span>
+            </label>
+          ))}
+        </fieldset>
         <fieldset className="dias">
           <legend>Dias da semana</legend>
           {diasSemana.map(([valor, nome]) => (
@@ -87,12 +100,34 @@ export function BuscaForm({
             ))}
           </select>
         </label>
+        <div
+          className="preferencias-feedback"
+          data-warning={!dias.length || !cabeNaFaixa}
+          role="status"
+        >
+          <CalendarDays size={17} aria-hidden="true" />
+          <span>
+            {!dias.length
+              ? "Selecione pelo menos um dia para montar sua semana."
+              : !cabeNaFaixa
+                ? "A faixa de horário precisa comportar a duração da aula."
+                : `Sua semana: ${dias.length} dia(s) · ${dias.length * duracaoMinutos} min de ${idioma}`}
+          </span>
+        </div>
         <p className="nota">
           <Check size={15} /> O horário de início será o mesmo em todos os dias
           escolhidos.
         </p>
         <button type="submit">
-          <Search size={17} />
+          {carregando ? (
+            <LoaderCircle
+              className="loading-spinner"
+              size={17}
+              aria-hidden="true"
+            />
+          ) : (
+            <Search size={17} aria-hidden="true" />
+          )}
           {carregando ? "Buscando professores…" : "Encontrar professores"}
         </button>
       </fieldset>
