@@ -28,10 +28,10 @@ export function Hero() {
     <>
       <Reveal className="hero-photo">
         <img
-          src="/brand/hero-aluna.webp"
-          alt="Aluna da King of Languages com notebook, sorrindo"
-          width="1200"
-          height="1531"
+          src="/brand/hero-aluna-ia.png"
+          alt="Imagem gerada por IA de uma mulher sorrindo com notebook"
+          width="1110"
+          height="1417"
           fetchPriority="high"
         />
       </Reveal>
@@ -66,56 +66,6 @@ export function Hero() {
         </header>
       </Reveal>
     </>
-  );
-}
-export function Stories() {
-  return (
-    <section className="stories">
-      <Reveal>
-        <span className="marca">HISTÓRIAS REAIS</span>
-        <h2>Quem aprendeu inglês com a gente</h2>
-        <p>Histórias reais, resultado comprovado.</p>
-      </Reveal>
-      <div className="story-grid">
-        {[
-          {
-            foto: "deise",
-            nome: "Deise Pinho",
-            texto: "Cheguei na King do zero. Em 1 ano, escrevo e me comunico.",
-          },
-          {
-            foto: "guilherme",
-            nome: "Guilherme Querino",
-            texto:
-              "Conversação de segunda a sexta. Vou fazer intercâmbio de trabalho.",
-          },
-          {
-            foto: "cirlene",
-            nome: "Cirlene Nunes",
-            texto: "Já estudei em várias escolas e nada se compara.",
-          },
-        ].map((aluno, i) => (
-          <Reveal key={aluno.foto} delay={i * 0.1}>
-            <article className="story">
-              <div className="story-person">
-                <img
-                  src={`/brand/${aluno.foto}.webp`}
-                  alt={`Foto de ${aluno.nome}`}
-                  width="56"
-                  height="56"
-                  loading="lazy"
-                />
-                <div>
-                  <h3>{aluno.nome}</h3>
-                  <Stars />
-                </div>
-              </div>
-              <blockquote>{aluno.texto}</blockquote>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-    </section>
   );
 }
 export function ComoFunciona() {

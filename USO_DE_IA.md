@@ -1,5 +1,7 @@
 # Uso de IA
 
+A seção de depoimentos “Histórias reais” foi removida a pedido da pessoa usuária. A foto principal foi substituída por uma imagem criada pela ferramenta integrada de geração de imagens, inspirada na composição da referência original, com fundo transparente. O prompt completo está em [docs/IMAGEM_HERO.md](docs/IMAGEM_HERO.md).
+
 Foi usado o Codex para implementar a API em C#/.NET 8, o frontend em React/TypeScript, os testes automatizados e a documentação. O agente leu o enunciado e os dados, escreveu a implementação e executou testes e verificações de integração.
 
 Na adaptação visual, o Codex inspecionou o site oficial no navegador para identificar a paleta, as fontes, os ícones e os movimentos. Incorporou imagens oficiais localmente e adaptou a composição para o formulário de busca. A logo branca precisou de um fundo azul-marinho para manter sua legibilidade.

@@ -3,7 +3,6 @@ import {
   BrandHeader,
   BrandFooter,
   Hero,
-  Stories,
   ComoFunciona,
 } from "./components/Brand";
 import { BuscaForm } from "./components/BuscaForm";
@@ -33,7 +32,6 @@ export default function App() {
           carregando={carregando}
         />
         <ComoFunciona />
-        <Stories />
       </main>
       <BrandFooter />
     </MotionConfig>

@@ -744,61 +744,6 @@ details li span {
   color: #ffffffb8;
   font-size: 12px;
 }
-.stories {
-  max-width: 1180px;
-  margin: auto;
-  padding: 72px 28px;
-  text-align: center;
-}
-.stories h2 {
-  margin: 16px 0 14px;
-  font-size: 36px;
-  letter-spacing: -0.9px;
-}
-.stories > div > p {
-  color: var(--text-muted);
-  font-size: 14px;
-}
-.story-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-  margin-top: 34px;
-}
-.story {
-  text-align: left;
-  padding: 26px;
-  transition:
-    transform 0.25s,
-    box-shadow 0.25s;
-}
-.story:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--elevated-shadow);
-}
-.story-person {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.story-person img {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-.story-person h3 {
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-.story blockquote {
-  margin: 22px 0 0;
-  color: var(--brand-navy);
-  font-size: 15px;
-  line-height: 1.7;
-  font-weight: 700;
-}
 .brand-footer {
   display: flex;
   align-items: start;
@@ -878,13 +823,6 @@ details li span {
   }
   .como-funciona {
     gap: 40px;
-  }
-  .story {
-    padding: 20px;
-  }
-  .story-person {
-    align-items: start;
-    flex-direction: column;
   }
 }
 @media (max-width: 800px) {
@@ -980,16 +918,6 @@ details li span {
   }
   .como-intro p {
     max-width: 500px;
-  }
-  .stories {
-    padding: 48px 20px;
-  }
-  .stories h2 {
-    font-size: 29px;
-  }
-  .story-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
   }
   .brand-footer {
     flex-direction: column;

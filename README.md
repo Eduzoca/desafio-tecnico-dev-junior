@@ -34,7 +34,6 @@ dotnet test EncontreUmProfessor.sln --configuration Release
 
 - O frontend separa o formulário (`BuscaForm`), os resultados (`BuscaResultados`), os elementos visuais da marca (`Brand` e `Visual`) e o estado HTTP (`useBusca`). O arquivo `App.tsx` compõe a página. O CSS está formatado, com regras de seletores repetidos consolidadas.
 
-- Identidade visual baseada em `https://site.kingoflanguages.com.br/`: vermelho `#CC213A`, azul-marinho `#061F35`, azul `#0057A5`, dourado `#EDC006` e fonte Poppins. Imagens, fontes e favicon oficiais ficam em `frontend/public/brand`; a logo foi obtida no site principal `https://kingoflanguages.com.br/`. Ícones são Lucide. A interface usa Motion para entradas ao aparecer na tela, além dos movimentos `floatBlob` e `typingDot` observados no site. A preferência de movimento reduzido é respeitada. O conteúdo e as interações foram adaptados para a busca do desafio.
 
 - O idioma é comparado sem diferença entre maiúsculas e minúsculas e sem espaços externos. Um idioma não cadastrado retorna uma busca sem professores elegíveis.
 - Dias seguem exatamente os identificadores do enunciado; dias repetidos são considerados apenas uma vez.
