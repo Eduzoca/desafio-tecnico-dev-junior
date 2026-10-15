@@ -1,4 +1,4 @@
-import { MotionConfig } from "motion/react";
+import { HeroScene } from "./components/HeroScene";
 import {
   BrandHeader,
   BrandFooter,
@@ -12,12 +12,13 @@ import { useBusca } from "./hooks/useBusca";
 export default function App() {
   const { resultado, consulta, erros, carregando, buscar } = useBusca();
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       <BrandHeader />
       <main id="inicio">
         <div className="hero-background" aria-hidden="true">
           <div className="blob blob-red" />
           <div className="blob blob-blue" />
+          <HeroScene />
         </div>
         <div className="layout" id="busca">
           <Hero />
@@ -34,6 +35,6 @@ export default function App() {
         <ComoFunciona />
       </main>
       <BrandFooter />
-    </MotionConfig>
+    </>
   );
 }

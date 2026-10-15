@@ -1,21 +1,7 @@
-import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
-
-vi.mock("motion/react", () => ({
-  MotionConfig: ({ children }: { children: ReactNode }) => children,
-  motion: {
-    div: ({
-      children,
-      className,
-    }: {
-      children: ReactNode;
-      className?: string;
-    }) => <div className={className}>{children}</div>,
-  },
-}));
 
 const fetchMock = vi.fn();
 const sucesso = {
