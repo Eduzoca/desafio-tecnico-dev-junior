@@ -11,6 +11,9 @@ export function BuscaForm({
   carregando: boolean;
   onSearch: (request: BuscaRequest) => Promise<void>;
 }) {
+  const [cliquesIdioma, setCliquesIdioma] = useState<Record<string, number>>(
+    {},
+  );
   const [idioma, setIdioma] = useState<string>(buscaInicial.idioma);
   const [dias, setDias] = useState<DiaSemana[]>(buscaInicial.dias);
   const [inicioFaixa, setInicio] = useState(buscaInicial.inicioFaixa);
@@ -45,8 +48,18 @@ export function BuscaForm({
                 value={opcao}
                 checked={idioma === opcao}
                 onChange={() => setIdioma(opcao)}
+                onClick={() =>
+                  setCliquesIdioma((atual) => ({
+                    ...atual,
+                    [opcao]: (atual[opcao] ?? 0) + 1,
+                  }))
+                }
               />
-              <LanguageOption idioma={opcao} selecionado={idioma === opcao} />
+              <LanguageOption
+                idioma={opcao}
+                selecionado={idioma === opcao}
+                cliques={cliquesIdioma[opcao] ?? 0}
+              />
             </label>
           ))}
         </fieldset>

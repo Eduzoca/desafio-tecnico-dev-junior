@@ -1,3 +1,4 @@
+import { cameraDistance } from "./globeFraming";
 import { createGlobe } from "./globeModel";
 import { globeVisual } from "./globeVisual";
 import * as THREE from "three";
@@ -115,10 +116,7 @@ export function createHeroScene(
     const { width, height } = host.getBoundingClientRect();
     if (!width || !height) return;
     camera.aspect = width / height;
-    camera.position.z =
-      globeVisual.frameRadius /
-      (Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
-        Math.min(camera.aspect, 1));
+    camera.position.z = cameraDistance(camera.aspect);
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
     if (!lost) render();

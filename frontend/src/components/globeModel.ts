@@ -35,11 +35,11 @@ function createGreetings(globe: THREE.Group) {
     });
     labels.push(material);
     const sprite = new THREE.Sprite(material);
-    sprite.scale.set(1.65, 0.69, 1);
+    sprite.scale.set(globeVisual.labelWidth, globeVisual.labelHeight, 1);
     sprite.position.set(
-      index === 1 ? 1.6 : -1.65,
-      index === 0 ? 1.2 : index === 1 ? 0.2 : -1.25,
-      1,
+      index === 1 ? 1.25 : -1.25,
+      index === 0 ? 1.2 : index === 1 ? 0.2 : -1.2,
+      0.5,
     );
     globe.add(sprite);
   });

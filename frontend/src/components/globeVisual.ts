@@ -15,5 +15,7 @@ export const globeVisual = {
   pointerDuration: 0.9,
   maxPixelRatio: 1.5,
   cameraFov: 36,
-  frameRadius: 2.5,
+  frameRadius: 2.8,
+  labelWidth: 1.2,
+  labelHeight: 0.5,
 };

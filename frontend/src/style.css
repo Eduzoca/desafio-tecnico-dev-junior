@@ -216,11 +216,11 @@ main > :not(.hero-background) {
   object-position: bottom;
 }
 .hero-scene {
-  --globe-size: clamp(320px, 40vw, 600px);
+  --globe-size: min(100%, 600px);
   position: absolute;
   width: var(--globe-size);
-  height: var(--globe-size);
-  left: 42%;
+  aspect-ratio: 1;
+  left: 50%;
   top: 42%;
   transform: translate(-50%, -50%);
   z-index: 0;
@@ -963,7 +963,7 @@ details li span {
     padding: 32px 24px;
   }
   .hero-scene {
-    --globe-size: min(280px, 85vw);
+    --globe-size: min(280px, 100%);
   }
 }
 @media (max-width: 520px) {
@@ -1264,6 +1264,26 @@ button:not(:disabled):active {
 }
 @media (prefers-reduced-motion: reduce) {
   .language-shine {
+    display: none;
+  }
+}
+
+.language-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+}
+.language-burst svg.language-mini-flag {
+  position: absolute;
+  width: 10px;
+  height: 7px;
+  max-width: none;
+  opacity: 0;
+  border-radius: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-burst {
     display: none;
   }
 }
