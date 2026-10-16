@@ -24,7 +24,7 @@ export function Hero() {
     <>
       <Reveal className="hero-photo">
         <img
-          src="/brand/hero-estudante.png"
+          src="/brand/hero-estudante.webp"
           alt="Mulher sorrindo com notebook"
           width="1110"
           height="1417"
