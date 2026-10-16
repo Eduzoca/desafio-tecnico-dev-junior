@@ -1,9 +1,9 @@
 import { DisponibilidadeSemana } from "./DisponibilidadeSemana";
-import { Check, Clock, Plus, User, Users } from "lucide-react";
-import { Reveal } from "./Visual";
+import { Plus, Users } from "lucide-react";
+
 import type { BuscaRequest, Resultado } from "../types";
 import { ResumoBusca } from "./ResumoBusca";
-import { PreviaSemanal } from "./PreviaSemanal";
+import { ExplorarResultados } from "./ExplorarResultados";
 export function BuscaResultados({
   resultado,
   consulta,
@@ -73,40 +73,17 @@ export function BuscaResultados({
               ? `${resultado.professores.length} professor(es) disponíveis`
               : "Nenhum professor encontrado"}
           </h2>
-          {consulta && (
-            <ResumoBusca consulta={consulta} resultado={resultado} />
-          )}
+          {consulta && <ResumoBusca consulta={consulta} />}
           {!resultado.professores.length && (
             <p>Tente outros dias, uma faixa maior ou uma duração menor.</p>
           )}
-          <div className="results-grid">
-            {resultado.professores.map((p, i) => (
-              <Reveal key={p.id} delay={i * 0.08}>
-                <article className="professor-card">
-                  <div className="professor">
-                    <span className="avatar">
-                      <User />
-                    </span>
-                    <div>
-                      <h3>{p.nome}</h3>
-                      <p>{p.aulasNaSemana} aula(s) na semana</p>
-                    </div>
-                    <Check className="eligible-check" />
-                  </div>
-                  <p className="rotulo">
-                    <Clock size={14} /> Horários de início disponíveis
-                  </p>
-                  {consulta && (
-                    <PreviaSemanal
-                      nome={p.nome}
-                      horarios={p.horarios}
-                      consulta={consulta}
-                    />
-                  )}
-                </article>
-              </Reveal>
-            ))}
-          </div>
+          {consulta && resultado.professores.length > 0 && (
+            <ExplorarResultados
+              key={JSON.stringify(consulta)}
+              resultado={resultado}
+              consulta={consulta}
+            />
+          )}
           {resultado.naoElegiveis.length > 0 && (
             <details>
               <summary>
@@ -119,22 +96,20 @@ export function BuscaResultados({
                 className="motivos-resumo"
                 aria-label="Resumo dos motivos de exclusão"
               >
-                {[
-                  "Não ensina o idioma",
-                  "Agenda bloqueada",
-                  "Sem horário em comum nos dias pedidos",
-                ].map((motivo) => {
-                  const quantidade = resultado.naoElegiveis.filter(
-                    (p) => p.motivo === motivo,
-                  ).length;
-                  return (
-                    quantidade > 0 && (
-                      <p key={motivo}>
-                        <strong>{quantidade}</strong> · {motivo}
-                      </p>
-                    )
-                  );
-                })}
+                {[...new Set(resultado.naoElegiveis.map((p) => p.motivo))].map(
+                  (motivo) => {
+                    const quantidade = resultado.naoElegiveis.filter(
+                      (p) => p.motivo === motivo,
+                    ).length;
+                    return (
+                      quantidade > 0 && (
+                        <p key={motivo}>
+                          <strong>{quantidade}</strong> · {motivo}
+                        </p>
+                      )
+                    );
+                  },
+                )}
               </div>
               <ul>
                 {resultado.naoElegiveis.map((p) => (
