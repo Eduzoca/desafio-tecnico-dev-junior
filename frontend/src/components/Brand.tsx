@@ -1,12 +1,8 @@
-import { Clock, Globe, Mail, User, Check, ArrowUpRight } from "lucide-react";
-import { Reveal, Stars } from "./Visual";
+import { Globe, Mail, ArrowUpRight } from "lucide-react";
+import { Reveal } from "./Visual";
 export function BrandHeader() {
   return (
     <>
-      <div className="topbar">
-        <span>Seu professor particular. Seu idioma. Seu horário.</span>
-        <a href="#busca">Quero encontrar meu professor</a>
-      </div>
       <nav className="brand-nav" aria-label="Navegação principal">
         <a href="#inicio" aria-label="King of Languages — início">
           <img
@@ -28,8 +24,8 @@ export function Hero() {
     <>
       <Reveal className="hero-photo">
         <img
-          src="/brand/hero-aluna-ia.png"
-          alt="Imagem gerada por IA de uma mulher sorrindo com notebook"
+          src="/brand/hero-estudante.png"
+          alt="Mulher sorrindo com notebook"
           width="1110"
           height="1417"
           fetchPriority="high"
@@ -46,79 +42,9 @@ export function Hero() {
             acompanhar seu aprendizado.{" "}
             <strong>Uma aula que cabe na sua rotina.</strong>
           </p>
-          <div className="hero-badge">
-            <Stars />
-            <span>+9.000 alunos já começaram a falar inglês</span>
-          </div>
-          <ul className="hero-benefits">
-            <li>
-              <Check aria-hidden="true" />
-              Aulas individuais e personalizadas
-            </li>
-            <li>
-              <Check aria-hidden="true" />O mesmo horário nos dias escolhidos
-            </li>
-            <li>
-              <Check aria-hidden="true" />
-              Aulas de 30, 60 ou 90 minutos
-            </li>
-          </ul>
         </header>
       </Reveal>
     </>
-  );
-}
-export function ComoFunciona() {
-  return (
-    <section className="como-funciona" aria-labelledby="como-titulo">
-      <Reveal className="como-intro">
-        <span className="marca">O CAMINHO</span>
-        <h2 id="como-titulo">
-          Seu próximo passo.
-          <br />
-          Do seu jeito.
-        </h2>
-        <p>
-          Da escolha do idioma ao horário em comum: tudo começa com a sua
-          disponibilidade.
-        </p>
-      </Reveal>
-      <div className="passos">
-        {[
-          {
-            numero: "01",
-            Icone: Globe,
-            titulo: "Escolha seu idioma",
-            texto:
-              "Inglês, Espanhol ou Francês. Qual vai ser seu próximo desafio?",
-          },
-          {
-            numero: "02",
-            Icone: Clock,
-            titulo: "Conte sua rotina",
-            texto: "Selecione os dias, a faixa de horário e a duração da aula.",
-          },
-          {
-            numero: "03",
-            Icone: User,
-            titulo: "Encontre seu professor",
-            texto:
-              "Compare os horários disponíveis e visualize como ficaria sua semana.",
-          },
-        ].map(({ numero, Icone, titulo, texto }, i) => (
-          <Reveal className="passo" key={numero} delay={i * 0.1}>
-            <div className="passo-icon">
-              <Icone size={21} aria-hidden="true" />
-            </div>
-            <div>
-              <span className="passo-numero">{numero}</span>
-              <h3>{titulo}</h3>
-              <p>{texto}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
   );
 }
 export function BrandFooter() {

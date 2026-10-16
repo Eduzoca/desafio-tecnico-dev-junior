@@ -1,10 +1,5 @@
 import { HeroScene } from "./components/HeroScene";
-import {
-  BrandHeader,
-  BrandFooter,
-  Hero,
-  ComoFunciona,
-} from "./components/Brand";
+import { BrandHeader, BrandFooter, Hero } from "./components/Brand";
 import { BuscaForm } from "./components/BuscaForm";
 import { BuscaResultados } from "./components/BuscaResultados";
 import { Reveal } from "./components/Visual";
@@ -15,16 +10,18 @@ export default function App() {
     <>
       <BrandHeader />
       <main id="inicio">
-        <div className="hero-background" aria-hidden="true">
-          <div className="blob blob-red" />
-          <div className="blob blob-blue" />
-          <HeroScene />
-        </div>
-        <div className="layout" id="busca">
-          <Hero />
-          <Reveal className="form-reveal" delay={0.2}>
-            <BuscaForm carregando={carregando} onSearch={buscar} />
-          </Reveal>
+        <div className="hero-section">
+          <div className="hero-background" aria-hidden="true">
+            <div className="blob blob-red" />
+            <div className="blob blob-blue" />
+            <HeroScene />
+          </div>
+          <div className="layout" id="busca">
+            <Hero />
+            <Reveal className="form-reveal" delay={0.2}>
+              <BuscaForm carregando={carregando} onSearch={buscar} />
+            </Reveal>
+          </div>
         </div>
         <BuscaResultados
           resultado={resultado}
@@ -32,7 +29,6 @@ export default function App() {
           erros={erros}
           carregando={carregando}
         />
-        <ComoFunciona />
       </main>
       <BrandFooter />
     </>

@@ -1,7 +1,25 @@
 export const idiomas = [
-  { nome: "Inglês", pais: "GB", saudacao: "Hello!", cor: "#0057a5" },
-  { nome: "Espanhol", pais: "ES", saudacao: "¡Hola!", cor: "#cc213a" },
-  { nome: "Francês", pais: "FR", saudacao: "Bonjour!", cor: "#061f35" },
+  {
+    nome: "Inglês",
+    pais: "GB",
+    saudacao: "Hello!",
+    cor: "#0057a5",
+    balao: [-1.25, 1.2, 0.5],
+  },
+  {
+    nome: "Espanhol",
+    pais: "ES",
+    saudacao: "¡Hola!",
+    cor: "#cc213a",
+    balao: [1.25, 0.2, 0.5],
+  },
+  {
+    nome: "Francês",
+    pais: "FR",
+    saudacao: "Bonjour!",
+    cor: "#061f35",
+    balao: [1.4, -1.1, 0.5],
+  },
 ] as const;
 export const duracoes = [30, 60, 90];
 export const diasSemana = [

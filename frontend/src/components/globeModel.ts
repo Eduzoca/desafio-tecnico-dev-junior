@@ -4,7 +4,7 @@ import { globeVisual } from "./globeVisual";
 function createGreetings(globe: THREE.Group) {
   const textures: THREE.CanvasTexture[] = [];
   const labels: THREE.SpriteMaterial[] = [];
-  idiomas.forEach(({ saudacao: text, cor }, index) => {
+  idiomas.forEach(({ saudacao: text, cor, balao }) => {
     const canvas = document.createElement("canvas");
     canvas.width = 384;
     canvas.height = 160;
@@ -36,11 +36,7 @@ function createGreetings(globe: THREE.Group) {
     labels.push(material);
     const sprite = new THREE.Sprite(material);
     sprite.scale.set(globeVisual.labelWidth, globeVisual.labelHeight, 1);
-    sprite.position.set(
-      index === 1 ? 1.25 : -1.25,
-      index === 0 ? 1.2 : index === 1 ? 0.2 : -1.2,
-      0.5,
-    );
+    sprite.position.set(balao[0], balao[1], balao[2]);
     globe.add(sprite);
   });
   return () => {
