@@ -83,6 +83,18 @@ Requisições inválidas recebem HTTP 400 com `mensagem` e `erros`. A API valida
 React Bootstrap fornece os componentes de interface; FullCalendar apresenta a agenda; Lucide fornece ícones; Three.js e GSAP compõem o fundo animado. Componentes, hooks, serviços e configurações mantêm responsabilidades separadas.
 
 
+Mais detalhes sobre a assistência utilizada estão em [Uso de IA](USO_DE_IA.md).
+
+## Roteiro para avaliar
+
+1. Inicie a API e a interface pelos comandos acima.
+2. Busque Espanhol, segunda, 18:00–20:00 e 60 minutos: o resultado deve listar Ana e Diego nessa ordem; Diego oferece 18:00, 18:30 e 19:00.
+3. Abra os motivos de exclusão, selecione um horário para ver a prévia e consulte a agenda semanal.
+4. Envie uma busca sem dias para conferir a validação. Interrompa a API para conferir o erro de comunicação e tente novamente após reiniciá-la.
+5. Confira o formulário e os filtros em desktop e celular.
+
+Para revisar as regras, comece em `BuscaService.cs`; para conferir o contrato HTTP, em `Program.cs`. No frontend, `useBusca.ts` controla estado e cancelamento, e `services/professores.ts` concentra o transporte e a validação da resposta. A agenda semanal faz sete consultas sob demanda, uma por dia, mantendo a faixa e a duração da busca.
+
 ## Verificar a solução
 
 Na raiz:
