@@ -5,6 +5,14 @@ using Xunit;
 
 public class DadosReaisTests
 {
+    [Fact]
+    public void ArquivoDeProfessoresMantemBytesDoOriginal()
+    {
+        var bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "professores.json"));
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes));
+        Assert.Equal("44A31E4AE4424DCFBE072B02FE29DA9767CD02F342206C34FAA3619E11B23D14", hash);
+    }
+
     private static Professor[] LerProfessores()
     {
         using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "professores.json")));
