@@ -1,19 +1,18 @@
 # Encontre um Professor
 
-Aplicação para encontrar professores de idiomas com um **horário fixo em comum nos dias escolhidos**. API em .NET 8 e interface React com TypeScript, usando o arquivo original `professores.json`, sem alterações.
+Desenvolvi esta aplicação para buscar professores de idiomas que tenham um **mesmo horário disponível em todos os dias escolhidos**. Usei .NET 8 na API e React com TypeScript na interface, com os dados fornecidos em `professores.json`.
 
+## Como executar
 
-## Executar localmente
+Para rodar o projeto, é necessário ter o SDK .NET 8 e Node.js 22.13+ na linha 22, ou 24+, com npm.
 
-Requisitos: SDK .NET 8 e Node.js 22.13+ na linha 22, ou 24+, com npm.
-
-Na raiz, inicie a API:
+Na raiz do projeto, inicie a API:
 
 ```sh
 dotnet run --project backend/Professores.Api --urls http://localhost:5000
 ```
 
-Em outro terminal:
+Em outro terminal, entre na pasta da interface, instale as dependências e inicie o frontend:
 
 ```sh
 cd frontend
@@ -21,38 +20,47 @@ npm ci
 npm run dev
 ```
 
-Abra [localhost:5173](http://localhost:5173). O Vite encaminha `/api` para a porta 5000. Não é necessário configurar banco de dados ou credenciais.
+Acesse [localhost:5173](http://localhost:5173). Mantenha os dois terminais abertos. Configurei o Vite para encaminhar as chamadas de `/api` para a API na porta 5000. Não é necessário configurar banco de dados ou credenciais.
 
 ## Funcionalidades
 
 - Busca por idioma, dias da semana, faixa de horário e duração de 30, 60 ou 90 minutos.
-- Agenda semanal dos professores antes dos resultados.
-- Resultados com horários possíveis e quantidade de aulas marcadas na semana.
+- Listagem de professores com horários possíveis e quantidade de aulas marcadas na semana.
+- Exibição dos professores não elegíveis e seus motivos.
+- Agenda semanal para consultar a disponibilidade de cada professor.
 - Filtros por nome e horário e ordenação por carga semanal, nome ou quantidade de opções.
-- Painel de filtros à direita no desktop e acima dos resultados no celular.
-- Prévia semanal ao selecionar um horário e motivos de exclusão dos professores não elegíveis.
+- Prévia dos dias e horários ao selecionar uma opção de aula.
 - Estados de carregamento, validação, falha de comunicação e busca sem resultados.
-- Layout responsivo, fontes locais e animações que respeitam movimento reduzido.
+- Interface adaptada para desktop e celular.
 
-## Regras e decisões
+## Decisões de implementação
 
-O início da aula precisa estar disponível em **todos** os dias pedidos. Segunda às 18h e quarta às 19h não atendem a uma busca conjunta: é necessário um mesmo início nos dois dias.
+Separei a regra de busca da camada HTTP em `BuscaService.cs`. Na inicialização da API, carrego o JSON em memória, converto os horários para minutos e agrupo os intervalos por dia. Mantive essa estrutura porque o desafio trabalha com uma base pequena e não exige persistência.
 
-A aula deve caber inteira em um único bloco de disponibilidade e na faixa do aluno. Os inícios ocorrem a cada 30 minutos. Intervalos seguem `[início, fim)`, permitindo que uma aula comece quando outra termina.
+Para cada início possível, verifico se a aula cabe inteira em um único bloco de disponibilidade, dentro da faixa solicitada e sem conflito com outra aula. O mesmo início precisa atender a todos os dias escolhidos. Por exemplo, segunda às 18h e quarta às 19h não atendem a uma busca conjunta.
 
-A ordenação inicial prioriza menos aulas na semana e depois o nome. A prioridade dos motivos de exclusão é: `Não ensina o idioma`, `Agenda bloqueada` e `Sem horário em comum nos dias pedidos`.
+Tratei os intervalos como `[início, fim)`, permitindo que uma aula comece exatamente quando outra termina. Os horários de início são gerados a cada 30 minutos. A ordenação inicial considera menos aulas marcadas na semana e, em caso de empate, o nome em ordem alfabética com a cultura `pt-BR`.
 
-Os dados representam uma semana recorrente, sem datas ou conversão de fuso. A consulta complementar da agenda avalia cada dia separadamente; ela não indica um início comum entre todos os dias. Selecionar um horário apenas exibe uma prévia, sem reservar aula.
+Mantive os motivos de exclusão na prioridade do enunciado: `Não ensina o idioma`, `Agenda bloqueada` e `Sem horário em comum nos dias pedidos`.
 
-O backend carrega o JSON na inicialização e prepara intervalos por dia em memória. Não há banco ou alteração das agendas. Filtros e contadores da interface derivam das respostas da API. Respostas antigas não substituem consultas mais recentes, e falhas de comunicação não são mostradas como indisponibilidade.
+Para situações não detalhadas no enunciado, adotei estas decisões:
 
-Dias repetidos são considerados uma única vez. O idioma é comparado sem distinguir maiúsculas e minúsculas e ignorando espaços nas extremidades; um idioma não vazio que ninguém ensina retorna professores não elegíveis, em vez de erro de validação. Dias devem usar os identificadores do enunciado. Faixas válidas menores que a duração retornam uma busca sem horários. Empates de nome usam a cultura `pt-BR`.
+- Dias repetidos são considerados apenas uma vez.
+- Comparo o idioma sem distinguir maiúsculas e minúsculas e ignorando espaços nas extremidades.
+- Um idioma não vazio que ninguém ensina retorna os professores como não elegíveis, sem gerar erro de validação.
+- Os dias precisam usar os identificadores do enunciado, como `terca`.
+- Uma faixa válida menor que a duração da aula retorna uma busca sem horários.
+- A agenda representa uma semana recorrente, sem datas ou conversão de fuso horário.
 
-O JSON é idêntico byte a byte ao anexo original, com SHA-256 `44A31E4AE4424DCFBE072B02FE29DA9767CD02F342206C34FAA3619E11B23D14`. O arquivo `.gitattributes` impede que o Git converta suas quebras de linha, e um teste verifica sua integridade.
+No frontend, separei componentes, hooks, serviços e transformações dos resultados. As buscas guardam os critérios enviados, cancelam consultas anteriores e impedem que respostas antigas substituam resultados recentes. Os filtros locais usam os dados recebidos, sem fazer novas consultas.
+
+Na agenda semanal, consulto cada dia separadamente, mantendo idioma, faixa e duração. Essa visualização permite explorar a semana, mas não indica um horário comum entre todos os dias. Selecionar uma opção apenas exibe uma prévia, sem reservar aula.
 
 ## API
 
 `POST /api/professores/busca`
+
+Exemplo de requisição:
 
 ```json
 {
@@ -66,38 +74,26 @@ O JSON é idêntico byte a byte ao anexo original, com SHA-256 `44A31E4AE4424DCF
 
 A resposta contém `professores`, com `id`, `nome`, `aulasNaSemana` e `horarios`, e `naoElegiveis`, com `id`, `nome` e `motivo`.
 
-Requisições inválidas recebem HTTP 400 com `mensagem` e `erros`. A API valida idioma, dias, formato `HH:mm`, ordem da faixa e duração. Mais exemplos em [buscas.http](backend/Professores.Api/buscas.http).
+Para entradas inválidas, retorno HTTP 400 com `mensagem` e `erros`. Valido idioma, dias, formato `HH:mm`, ordem da faixa e duração. Deixei outros exemplos em [buscas.http](backend/Professores.Api/buscas.http).
 
-## Organização e tecnologias
+## Organização do projeto
 
 | Caminho | Responsabilidade |
 | --- | --- |
 | `backend/Professores.Api` | Endpoints, validação e regras de disponibilidade |
-| `backend/Professores.Tests` | Testes das regras, contrato HTTP e dados originais |
-| `frontend/src/components` | Formulário, agenda, resultados e identidade visual |
+| `backend/Professores.Tests` | Testes das regras e do contrato HTTP |
+| `frontend/src/components` | Formulário, agenda, resultados e elementos visuais |
 | `frontend/src/hooks` | Estado e ciclo das consultas |
 | `frontend/src/services` | Cliente HTTP e validação das respostas |
-| `professores.json` | Fonte original de dados |
-| `.github/workflows/validacao.yml` | Validação automática no GitHub |
+| `frontend/src/domain` | Transformações da agenda e dos resultados |
+| `frontend/src/config.ts` | Opções do formulário e configurações compartilhadas |
+| `professores.json` | Dados fornecidos no desafio |
 
-React Bootstrap fornece os componentes de interface; FullCalendar apresenta a agenda; Lucide fornece ícones; Three.js e GSAP compõem o fundo animado. Componentes, hooks, serviços e configurações mantêm responsabilidades separadas.
+Usei React Bootstrap nos componentes de interface, FullCalendar na agenda, Lucide nos ícones e Three.js com GSAP no fundo animado. A identidade visual tem como referência [King LP](https://kingoflanguages.com.br/lp/) e [King](https://site.kingoflanguages.com.br/).
 
+## Testes
 
-Mais detalhes sobre a assistência utilizada estão em [Uso de IA](USO_DE_IA.md).
-
-## Roteiro para avaliar
-
-1. Inicie a API e a interface pelos comandos acima.
-2. Busque Espanhol, segunda, 18:00–20:00 e 60 minutos: o resultado deve listar Ana e Diego nessa ordem; Diego oferece 18:00, 18:30 e 19:00.
-3. Abra os motivos de exclusão, selecione um horário para ver a prévia e consulte a agenda semanal.
-4. Envie uma busca sem dias para conferir a validação. Interrompa a API para conferir o erro de comunicação e tente novamente após reiniciá-la.
-5. Confira o formulário e os filtros em desktop e celular.
-
-Para revisar as regras, comece em `BuscaService.cs`; para conferir o contrato HTTP, em `Program.cs`. No frontend, `useBusca.ts` controla estado e cancelamento, e `services/professores.ts` concentra o transporte e a validação da resposta. A agenda semanal faz sete consultas sob demanda, uma por dia, mantendo a faixa e a duração da busca.
-
-## Verificar a solução
-
-Na raiz:
+Na raiz do projeto:
 
 ```sh
 dotnet test EncontreUmProfessor.sln --configuration Release
@@ -112,14 +108,24 @@ npm run format:check
 npm run build
 ```
 
-São 39 testes no backend e 32 no frontend. O backend inclui 1.143 buscas sobre os dados reais comparadas com uma representação independente dos minutos livres, além de testes de fronteiras e contrato HTTP. O frontend testa regras e interface com respostas simuladas. O GitHub Actions executa testes, lint, formatação e build.
+Organizei 39 casos de teste no backend e 32 no frontend. Os testes do backend cobrem as regras, conflitos, limites dos intervalos, validações, ordenação e contrato HTTP. Também comparo 1.143 buscas nos dados fornecidos com uma representação independente dos minutos livres.
 
-O layout foi inspecionado em desktop e celular. Ainda não há testes automatizados de ponta a ponta em navegador real.
+Os testes de regra executam diretamente o serviço, sem subir a API. Os testes HTTP usam servidor em memória. No frontend, os testes usam respostas simuladas para conferir o formulário, os estados da busca, as prévias e o tratamento de consultas concorrentes. Configurei o GitHub Actions para executar testes, lint, formatação e build.
 
-## Publicação e limites
+Para conferir a aplicação manualmente:
 
-`npm run build` gera os arquivos em `frontend/dist`. Na hospedagem, encaminhe `/api` para o backend; o proxy do Vite funciona apenas no desenvolvimento. Para origens separadas, ajuste também a política de CORS da API.
+1. Busque Espanhol, segunda, 18:00–20:00 e 60 minutos. O resultado deve listar Ana e Diego nessa ordem; Diego oferece 18:00, 18:30 e 19:00.
+2. Abra os motivos de exclusão, selecione um horário e consulte a agenda semanal.
+3. Envie uma busca sem dias para conferir a mensagem de validação.
+4. Interrompa a API e tente buscar para conferir o erro de comunicação. Reinicie a API e tente novamente.
+5. Confira o formulário e os filtros em desktop e celular.
 
-Esta entrega consulta agendas recorrentes. Não inclui login, cadastro, persistência de alterações ou reserva de aulas. A prévia não garante disponibilidade futura. Como continuidade, cabem testes de ponta a ponta e agendamento com persistência e controle de concorrência.
+## Limites e próximos passos
 
-A identidade visual usa como referência [King LP](https://kingoflanguages.com.br/lp/) e [King](https://site.kingoflanguages.com.br/).
+Mantive o escopo na consulta de agendas recorrentes. Não implementei login, cadastro, persistência de alterações ou reserva de aulas. A prévia mostra uma possibilidade de horário e não garante disponibilidade futura.
+
+Ainda não incluí testes automatizados de ponta a ponta em navegador real. Como próximos passos, considero esses testes e um fluxo de agendamento com persistência e controle de concorrência.
+
+Para publicar a interface, `npm run build` gera os arquivos em `frontend/dist`. A hospedagem precisa servir esses arquivos e encaminhar `/api` para o backend. O proxy do Vite funciona apenas no desenvolvimento; em origens separadas, também é necessário ajustar o CORS da API.
+
+Registrei como usei assistência durante o desenvolvimento em [USO_DE_IA.md](USO_DE_IA.md).
