@@ -2,6 +2,7 @@
 
 Aplicação para encontrar professores de idiomas com um **horário fixo em comum nos dias escolhidos**. API em .NET 8 e interface React com TypeScript, usando o arquivo original `professores.json`, sem alterações.
 
+
 ## Executar localmente
 
 Requisitos: SDK .NET 8 e Node.js 22.13+ na linha 22, ou 24+, com npm.
@@ -39,11 +40,15 @@ O início da aula precisa estar disponível em **todos** os dias pedidos. Segund
 
 A aula deve caber inteira em um único bloco de disponibilidade e na faixa do aluno. Os inícios ocorrem a cada 30 minutos. Intervalos seguem `[início, fim)`, permitindo que uma aula comece quando outra termina.
 
-A ordenação inicial prioriza menos aulas na semana e depois o nome. A prioridade dos motivos de exclusão é: idioma não atendido, agenda bloqueada e ausência de horário em comum.
+A ordenação inicial prioriza menos aulas na semana e depois o nome. A prioridade dos motivos de exclusão é: `Não ensina o idioma`, `Agenda bloqueada` e `Sem horário em comum nos dias pedidos`.
 
 Os dados representam uma semana recorrente, sem datas ou conversão de fuso. A consulta complementar da agenda avalia cada dia separadamente; ela não indica um início comum entre todos os dias. Selecionar um horário apenas exibe uma prévia, sem reservar aula.
 
 O backend carrega o JSON na inicialização e prepara intervalos por dia em memória. Não há banco ou alteração das agendas. Filtros e contadores da interface derivam das respostas da API. Respostas antigas não substituem consultas mais recentes, e falhas de comunicação não são mostradas como indisponibilidade.
+
+Dias repetidos são considerados uma única vez. O idioma é comparado sem distinguir maiúsculas e minúsculas e ignorando espaços nas extremidades; um idioma não vazio que ninguém ensina retorna professores não elegíveis, em vez de erro de validação. Dias devem usar os identificadores do enunciado. Faixas válidas menores que a duração retornam uma busca sem horários. Empates de nome usam a cultura `pt-BR`.
+
+O JSON é idêntico byte a byte ao anexo original, com SHA-256 `44A31E4AE4424DCFBE072B02FE29DA9767CD02F342206C34FAA3619E11B23D14`. O arquivo `.gitattributes` impede que o Git converta suas quebras de linha, e um teste verifica sua integridade.
 
 ## API
 
@@ -95,7 +100,7 @@ npm run format:check
 npm run build
 ```
 
-São 38 testes no backend e 32 no frontend. O backend inclui 1.143 buscas sobre os dados reais comparadas com uma representação independente dos minutos livres, além de testes de fronteiras e contrato HTTP. O frontend testa regras e interface com respostas simuladas. O GitHub Actions executa testes, lint, formatação e build.
+São 39 testes no backend e 32 no frontend. O backend inclui 1.143 buscas sobre os dados reais comparadas com uma representação independente dos minutos livres, além de testes de fronteiras e contrato HTTP. O frontend testa regras e interface com respostas simuladas. O GitHub Actions executa testes, lint, formatação e build.
 
 O layout foi inspecionado em desktop e celular. Ainda não há testes automatizados de ponta a ponta em navegador real.
 

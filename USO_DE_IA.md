@@ -17,6 +17,12 @@ As solicitações humanas definiram o comportamento desejado e orientaram as rev
 
 O agente implementou alterações e executou verificações durante as iterações. As correções visuais também foram orientadas por capturas de tela enviadas na conversa. Este relato descreve a assistência registrada e não afirma que cada linha foi revisada manualmente pela pessoa candidata.
 
+## Casos em que a IA errou
+
+Durante os ajustes do hero, a composição proposta pelo agente deixou a figura cortada e o formulário sem espaço inferior suficiente. O problema foi percebido pela pessoa candidata ao abrir a página e enviar capturas de tela. A correção envolveu rever a altura da seção, o alinhamento da imagem e os espaçamentos do formulário, com novas verificações em desktop e celular.
+
+Também houve um erro verificável na conversão da imagem para WebP: a primeira tentativa usou apenas `lossless=True`, mas a comparação dos pixels RGBA falhou. O encoder não preservou os valores RGB ocultos em pixels transparentes. A conversão foi refeita com `exact=True`; a comparação byte a byte dos pixels decodificados passou, preservando também a transparência. O arquivo final ficou cerca de 39% menor.
+
 ## Verificação e limites
 
 Foram executados testes de backend e frontend, lint, verificação de formatação e build, além de inspeção visual no navegador. Testes aprovados não garantem ausência de defeitos. Não há suíte automatizada de ponta a ponta em navegador real.
