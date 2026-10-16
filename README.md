@@ -1,20 +1,18 @@
-# Desafio técnico: Encontre um Professor
+# Encontre um Professor
 
-## Solução implementada
+API em .NET 8 e interface React com TypeScript para encontrar professores com um horário fixo em comum nos dias escolhidos. Os dados são carregados do arquivo original `professores.json`, que permanece inalterado.
 
-API em .NET 8, interface React com TypeScript e testes xUnit. A regra de negócio está em `backend/Professores.Api/BuscaService.cs`, separada da camada HTTP. O arquivo original de professores é copiado para a saída da API e carregado em memória na inicialização.
+## Como executar
 
-### Como executar
+Requisitos: SDK .NET 8 e Node.js 22.13+ na linha 22, ou 24+, com npm.
 
-Requisitos: SDK .NET 8 (qualquer faixa estável a partir de 8.0.100) e Node.js 22.13+ na linha 22, ou 24+, com npm. O `global.json` seleciona a faixa estável mais recente do SDK 8 instalada, sem exigir a versão usada no desenvolvimento.
-
-Na raiz do repositório, inicie a API:
+Na raiz, inicie a API:
 
 ```powershell
 dotnet run --project backend/Professores.Api --urls http://localhost:5000
 ```
 
-Em outro terminal, inicie a tela:
+Em outro terminal:
 
 ```powershell
 cd frontend
@@ -22,58 +20,56 @@ npm ci
 npm run dev
 ```
 
-Acesse `http://localhost:5173`. O Vite encaminha `/api` para a API na porta 5000. Para compilar a tela para produção: `npm run build` dentro de `frontend`. O diretório `dist` precisa ser servido por um servidor que também encaminhe `/api` para o backend.
+Acesse `http://localhost:5173`. O Vite encaminha `/api` para a API na porta 5000. Para produção, execute `npm run build`; o servidor de hospedagem também precisa encaminhar `/api` ao backend.
 
-Execute os testes na raiz:
+## Funcionalidades
+
+- Busca por idioma, dias, faixa de horário e duração. Cada opção atende ao mesmo início em todos os dias pedidos.
+- Agenda dos professores antes dos resultados, com consulta complementar dos sete dias e calendário FullCalendar carregado sob demanda.
+- Filtros por nome e horário e ordenação por carga semanal, nome ou quantidade de opções. O painel ocupa uma coluna própria à direita; no celular, aparece acima da lista.
+- Prévia semanal ao selecionar um horário, com início e término nos dias consultados. Não há reserva nem alteração de dados.
+- Estados de carregamento, validação, erro de comunicação, ausência de resultados e motivos de indisponibilidade.
+- Landing responsiva, formulário centralizado na primeira tela do desktop e globo decorativo oculto no celular.
+
+## Organização e decisões
+
+A regra de negócio fica em `backend/Professores.Api/BuscaService.cs`, separada da camada HTTP. A agenda é preparada na inicialização com intervalos em minutos agrupados por dia. Aulas que apenas se encostam são permitidas. A prioridade dos motivos de exclusão e a ordenação inicial seguem o enunciado.
+
+O frontend separa componentes, hooks, cliente HTTP, transformações de domínio e configuração visual. React Bootstrap fornece os controles e o painel lateral; FullCalendar, a agenda; Lucide, os ícones; GSAP e Three.js, as animações. As posições das saudações e os parâmetros do globo ficam centralizados na configuração.
+
+O cliente HTTP valida respostas, distingue erros de rede, contrato, servidor e timeout e cancela buscas após 15 segundos. Respostas antigas não substituem uma consulta recente. Resultados e prévias usam os critérios enviados, mesmo que o formulário seja editado depois.
+
+Os filtros locais não fazem novas consultas. As opções por horário são derivadas da API e podem se sobrepor; não representam reservas. A consulta da semana trata cada dia separadamente e não implica um horário comum entre todos eles. Falhas não são mostradas como indisponibilidade.
+
+A identidade visual usa Poppins local, vermelho, azul-marinho e cartões claros, com referência em [King LP](https://kingoflanguages.com.br/lp/) e [King](https://site.kingoflanguages.com.br/). A cena respeita movimento reduzido, pausa fora da tela e limpa seus recursos ao desmontar. O fundo continua disponível sem WebGL.
+
+
+## Verificação
+
+Na raiz:
 
 ```powershell
 dotnet test EncontreUmProfessor.sln --configuration Release
 ```
 
-### Decisões
+Em `frontend`:
 
-- O frontend separa o formulário (`BuscaForm`), os resultados (`BuscaResultados`), os elementos visuais da marca (`Brand` e `Visual`) e o estado HTTP (`useBusca`). O arquivo `App.tsx` compõe a página. O CSS está formatado, com regras de seletores repetidos consolidadas.
+```powershell
+npm test -- --maxWorkers=1
+npm run lint
+npm run format:check
+npm run build
+```
 
+O backend tem 38 casos, incluindo validações, contrato HTTP em memória e 1.143 buscas sobre os dados reais, comparadas com um calendário independente minuto a minuto. O frontend tem 32 testes de regras e interface com respostas simuladas. A validação contínua fica em `.github/workflows/validacao.yml`.
 
-- O idioma é comparado sem diferença entre maiúsculas e minúsculas e sem espaços externos. Um idioma não cadastrado retorna uma busca sem professores elegíveis.
-- Dias seguem exatamente os identificadores do enunciado; dias repetidos são considerados apenas uma vez.
-- O primeiro candidato é arredondado para a próxima hora cheia ou meia hora. A aula precisa terminar dentro da faixa e de um único bloco de disponibilidade.
-- A agenda é preparada uma vez na inicialização: horários viram minutos e os intervalos são agrupados por dia. Isso evita converter repetidamente strings durante cada busca. Os dados originais não são modificados. Não foi feito benchmark de desempenho; a otimização reduz trabalho repetido, sem prometer ganho medido.
-- Intervalos que apenas se encostam são permitidos. Todos os dias solicitados precisam aceitar o mesmo horário.
-- A carga semanal conta todas as aulas cadastradas. Empates usam ordenação de nomes da cultura `pt-BR`.
-- Não elegíveis incluem todos os professores excluídos, na ordem original do arquivo, com a prioridade de motivos exigida.
-- Entradas semanticamente inválidas retornam HTTP 400 com `mensagem` e uma lista `erros`. JSON malformado, corpo nulo e tipos incorretos também retornam HTTP 400 em JSON, tanto em desenvolvimento quanto em produção.
-- A tela apresenta carregamento, erro de comunicação, erros de validação, ausência de resultados e motivos dos professores indisponíveis. Uma nova busca limpa os resultados anteriores.
-- O resumo usa os critérios enviados, mesmo que o formulário seja editado depois. Contamos todos os professores analisados e as opções de professor/horário; duas pessoas no mesmo horário são duas opções, não duas vagas garantidas.
-- Clicar em um horário mostra uma prévia semanal com início e término em cada dia solicitado. Essa prévia não reserva aulas nem modifica o JSON. A classificação e a ordenação continuam sendo as exigidas no enunciado.
-- Os motivos dos não elegíveis são agrupados para facilitar a leitura, mas cada professor continua listado com o texto exato exigido e a prioridade original.
-- Uma busca que ultrapasse 15 segundos é cancelada com mensagem para nova tentativa. Respostas antigas não substituem resultados recentes. O cancelamento também ocorre quando a tela é desmontada.
+O layout foi conferido no navegador em desktop e celular, incluindo a primeira tela em 1920×916 e 1366×768 e a ausência de sobreposição do painel lateral. Essa inspeção não substitui testes automatizados em navegador real, ainda não incluídos.
 
-### Limites da entrega
+## Limites
 
-Não há persistência de alterações, autenticação ou agendamento de aulas, pois a aplicação realiza somente a busca solicitada. Há testes unitários da regra de negócio e testes de interface com respostas HTTP simuladas; ainda não há testes automatizados em navegador real. O envio do link ao responsável pelo processo seletivo deve ser feito pela pessoa candidata.
-
-### Verificações
-
-- Backend: 38 casos xUnit. São 24 testes de validação/fronteira, nove combinações de idioma/duração que executam 1.143 buscas no arquivo real e cinco testes adicionais do contrato HTTP.
-- As 1.143 buscas percorrem os 127 subconjuntos não vazios da semana, três idiomas e três durações. Um calendário independente, minuto a minuto, confere os oito professores, horários, carga semanal, motivos e ordenação. A faixa dessas buscas é `00:00–23:59`; os testes unitários específicos cobrem faixas menores. Isso não é uma prova para todos os dados possíveis.
-- Os testes de regras e dados reais instanciam apenas o serviço, sem subir a API. Os testes HTTP adicionais usam um servidor em memória (`WebApplicationFactory`), sem precisar iniciar um processo ou abrir uma porta.
-- Frontend: 29 testes com Vitest e Testing Library, cobrindo os estados da interface, prévia semanal fiel à busca enviada, timeout e proteção contra respostas antigas.
-- Na pasta `frontend`, execute `npm test`, `npm run lint`, `npm run build` e `npm run format:check`.
-- Os testes de interface usam jsdom e simulam a API e as animações. Eles não substituem a inspeção visual e a integração em um navegador real.
-- O workflow `.github/workflows/validacao.yml` executa testes backend, testes frontend, formatação e build em cada push e pull request.
-
-### Como revisar a solução
-
-1. Execute o exemplo em `backend/Professores.Api/buscas.http`: Ana deve retornar `18:00`, e Diego, `18:00`, `18:30` e `19:00`.
-2. Busque Inglês em segunda e quarta, com duração de 60 minutos. Confira os motivos de exclusão: Carla está bloqueada, Elisa não tem quarta e Heitor não possui horário comum na faixa `18:00–21:00`.
-3. Observe Fábio: seu bloco começa às `18:15`, então o primeiro candidato permitido é `18:30`.
-4. Clique em um horário para conferir início e término nos dias selecionados; alterar o formulário só afeta resultados após uma nova busca.
-
-Repositório da solução: https://github.com/Eduzoca/desafio-tecnico-dev-junior, criado a partir do template original. O remoto `origin` aponta para a solução e `upstream` para o enunciado original.
+A aplicação consulta agendas recorrentes. Não implementa autenticação, persistência de alterações ou agendamento de aulas. Os arquivos de relatos complementares ficam disponíveis para preenchimento pela pessoa candidata.
 
 ---
-
 ## Contexto
 
 Uma escola de idiomas precisa encontrar professores disponíveis para cada novo aluno. O aluno informa o idioma, os dias da semana, a faixa de horário em que pode ter aula e a duração da aula; o sistema devolve os professores que conseguem atendê-lo e em quais horários.
@@ -190,7 +186,6 @@ Se encontrar uma situação que as regras não cobrem, decida, implemente e regi
 ## Entrega
 
 - **`README.md`** no seu repositório, com: como rodar a API e a tela, as decisões que você tomou e o que ficou faltando.
-- **`USO_DE_IA.md`**, com: quais ferramentas de IA você usou, como usou e **pelo menos um caso em que a IA errou** e como você percebeu. Usar IA é permitido; o que avaliamos é se você entende tudo o que entregou.
 
 ## O que vamos avaliar
 
@@ -202,25 +197,3 @@ Se encontrar uma situação que as regras não cobrem, decida, implemente e regi
 6. O README é claro e registra as decisões.
 
 Na entrevista técnica, você vai apresentar a solução e fazer uma pequena alteração ao vivo.
-
-### Interações e agenda semanal
-
-Os idiomas são selecionados por controles de rádio. O formulário apresenta a carga semanal e orientações sobre a faixa de horário. Ao selecionar um horário de um professor, a agenda exibe os sete dias da semana, destacando apenas os dias consultados. Os dados são recorrentes: não há datas específicas, reservas ou disciplinas além dos três idiomas do enunciado. Alterar os filtros requer uma nova busca; resultados e agenda continuam vinculados à consulta enviada. O fundo Three.js responde ao mouse com GSAP, sem exigir essa interação para usar a aplicação.
-
-### Semana completa e feedback de idioma
-
-Após uma busca, o botão “Ver disponibilidade da semana inteira” consulta os sete dias individualmente pela mesma API, mantendo idioma, faixa e duração. O FullCalendar mostra um professor por vez em uma semana compacta de 260 px, com seleção de professor e botão de abrir/recolher. As opções adicionais de cada dia ficam no popover “mais”. A consulta é complementar: disponibilidade em dias separados não significa que exista um horário comum entre eles. Falhas não são apresentadas como indisponibilidade; há cancelamento e opção de tentar novamente.
-
-Bandeiras do pacote country-flag-icons aparecem como detalhes de 14 px dentro das opções de idioma. GSAP anima discretamente o ícone e um brilho dentro do controle selecionado. Elas são decorativas; os nomes dos idiomas permanecem explícitos. Com movimento reduzido, somente o indicador estático é exibido. Atrás da modelo, em uma camada decorativa responsiva, o Three.js mostra um globo com “Hello!”, “¡Hola!” e “Bonjour!”, com movimento suave e resposta ao mouse.
-
-As opções do enunciado, os padrões iniciais e os metadados visuais ficam centralizados em `frontend/src/config.ts`; professores, dias disponíveis e horários continuam vindo da API. Valores de layout e animação são configurações de apresentação, não dados fictícios. Calendário e ícones usam pacotes mantidos externamente, carregando o calendário sob demanda.
-
-### Revisão focada de manutenção
-
-O cliente HTTP compartilhado valida as respostas antes de renderizá-las, distingue erros de contrato, rede, servidor e timeout e remove timers/listeners no encerramento. A agenda semanal usa um hook próprio e agregação pura por identificador de professor e dia tipado; filtros novos descartam respostas antigas. A API e o JSON original permanecem inalterados.
-
-O globo separa modelo, saudações, parâmetros visuais e ciclo de renderização. O contêiner principal observa o mouse; a camada gráfica não intercepta cliques. A cena fica no fundo do hero, atrás de todas as colunas, com canvas de 720–1080 px no desktop e tamanho adaptado no celular. A câmera considera o volume dos balões e a rotação para evitar cortes. Movimento reduzido ou falta de WebGL usam um ícone estático; a cena pausa fora da tela e limpa seus recursos ao desmontar.
-
-ESLint com TypeScript e regras de hooks integra a validação contínua. Em 15/10/2026, os 25 testes frontend e 38 backend passaram; a auditoria npm não apontou vulnerabilidades conhecidas. A inspeção visual em navegador permanece pendente: a ferramenta não conseguiu iniciar por erro de arquivo ausente. Testes em jsdom não certificam a aparência nem a renderização WebGL real.
-
-Ao clicar nas opções de idioma, três bandeiras de 10 px voam dentro do controle por 0,5 segundo. O efeito se repete ao clicar no idioma já selecionado e respeita movimento reduzido.
